@@ -102,6 +102,21 @@ justify-content: center;
 
 @media (max-width: 1280px) {
 .UserIcon, .LockIcon{
+    left: 21%;
+}
+
+.UserIcon{
+    top: 37%;
+}
+
+.LockIcon{
+    top: 54%;
+}
+
+}
+
+@media (max-width: 1080px) {
+    .UserIcon, .LockIcon{
     left: 18%;
 }
 
@@ -112,7 +127,6 @@ justify-content: center;
 .LockIcon{
     top: 57%;
 }
-
 }
 `;
 
@@ -151,7 +165,7 @@ div{
 
 
 //
-@media (max-width: 1280px) {
+@media (max-width: 1080px) {
     
     div{
         flex-direction: column;
@@ -187,6 +201,15 @@ color: #868E96;
     &:first-child{
         border: none;
         padding-bottom: 0.5em;
+    }
+}
+@media (min-width: 1080px) {
+
+    padding: 0 1em;
+
+    &:first-child{
+        border-right: 3px solid #D8D8D8;
+        padding: 0 0.4em;
     }
 }
     `;

@@ -39,7 +39,7 @@ justify-content: space-around;
 align-items: center;
 min-height: 60px;
 width: 100%;
-padding: 1em 2%;
+padding: 0.5em 2em;
 background-color: white;
 border-bottom: 1px solid gray;
 `;
@@ -84,5 +84,5 @@ cursor : pointer;
   color: Green;
   border: 2px green solid;
 }
-
 `;
+
