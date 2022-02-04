@@ -1,32 +1,95 @@
-import React from "react";
-import styled from "styled-components";
+import React, { useState } from 'react';
+import styled, { ThemeProvider } from "styled-components";
 import background from "../../assets/img/ed-259-Zm-CkDSKC1M-unsplash.jpg";
 import LogoUtm from "../../assets/img/logo.png";
 import { FaUser, FaLock } from 'react-icons/fa';
+import instance from '../utils/Instance';
 
-class Login extends React.Component {
-    render() {
-        return (
-            <Container>
-                <DivLogin>
-                    <LinkHome href="#"><Logo src={LogoUtm} /></LinkHome>
-                    <FormLogin>
-                        <div><Label>Inicia Sesión</Label>
-                            <Label>Postulante</Label></div>
-                        <FaUser class="UserIcon" />
-                        <FaLock class="LockIcon" />
+export const Login = () => {
 
-                        <Input type="email" placeholder="Correo electrónico"></Input>
-                        <Input type="password" placeholder="Contraseña"></Input>
-                        <Input type="button" value="Iniciar sesión"></Input>
-                    </FormLogin>
-                    <div><p>¿No tienes una cuenta? <Link href="#">Regístrate gratis</Link></p></div>
-                    <Link>¿Olvidaste tu contraseña?</Link>
-                </DivLogin>
-            </Container >
-        );
+    //logica
+    const [objbutton, setButton] = useState(false);
+    const [objUser, setUSer] = useState({
+        correo: "",
+        contrasena: ""
+    });
+
+    //temas
+    const theme = {
+        cursor: objbutton ? "" : "pointer",
+        background: objbutton ? "#D4EFDF" : "#147935",
+        color: objbutton ? "#147935" : "white",
+        border: objbutton ? "2px solid green" : "none"
+    };
+
+    function handleInputChange(event) {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+
+        setUSer(prev => ({ ...prev, [name]: value }));
     }
-}
+
+    function Login() {
+        setButton(true);
+        console.log(objUser);
+        instance.post('/usuario/login', objUser)
+            .then(resp => {
+                const data = resp.data.data;
+                if (resp.data.statusCode === 200 && Object.keys(data).length > 0) {
+                    if (data.estado_cuenta) {
+                        localStorage.setItem('token', JSON.stringify(data.token));
+                        console.log(JSON.parse(localStorage.getItem('token')));
+                        alert('Logueado');
+                    } else {
+                        console.log(data);
+                        console.log('Hubo un error - Cuenta no activada');
+                        setButton(false);
+                    }
+                } else {
+                    console.log('Hubo un error - Contraseña o correo incorrectos');
+                    setButton(false);
+                }
+
+            });
+    }
+
+
+    return (
+        <Container>
+            <DivLogin>
+                <LinkHome href="#"><Logo src={LogoUtm} /></LinkHome>
+                <FormLogin>
+                    <div><Label>Inicia Sesión</Label>
+                        <Label>Postulante</Label></div>
+                    <FaUser className="UserIcon" />
+                    <FaLock className="LockIcon" />
+
+                    <Input
+                        name="correo"
+                        type="email"
+                        placeholder="Correo electrónico"
+                        value={objUser.correo}
+                        onChange={handleInputChange} />
+
+                    <Input
+                        name="contrasena"
+                        type="password"
+                        placeholder="Contraseña"
+                        value={objUser.contrasena}
+                        onChange={handleInputChange} />
+
+                    <ThemeProvider theme={theme}>
+                        <Input type="button" value="Iniciar sesión" onClick={Login} disabled={objbutton}></Input>
+                    </ThemeProvider>
+
+                </FormLogin>
+                <div><p>¿No tienes una cuenta? <Link href="/register">Regístrate gratis</Link></p></div>
+                <Link>¿Olvidaste tu contraseña?</Link>
+            </DivLogin>
+        </Container >
+    );
+};
 
 export default Login;
 
@@ -41,6 +104,7 @@ background-size: cover;
 display: flex;
 justify-content: center;
 align-items: center;
+padding: 1em;
 `;
 
 const DivLogin = styled.div`
@@ -71,11 +135,11 @@ p{
 }
 
 .UserIcon{
-    top: 38%;
+    top: 38.5%;
 }
 
 .LockIcon{
-    top: 54.5%;
+    top: 55%;
 }
 
 //Responsive 
@@ -92,11 +156,11 @@ justify-content: center;
 }
 
 .UserIcon{
-    top: 37%;
+    top: 37.5%;
 }
 
 .LockIcon{
-    top: 54%;
+    top: 54.5%;
 }
 }
 
@@ -106,11 +170,11 @@ justify-content: center;
 }
 
 .UserIcon{
-    top: 37%;
+    top: 37.5%;
 }
 
 .LockIcon{
-    top: 54%;
+    top: 54.5%;
 }
 
 }
@@ -121,11 +185,11 @@ justify-content: center;
 }
 
 .UserIcon{
-    top: 42%;
+    top: 42.5%;
 }
 
 .LockIcon{
-    top: 57%;
+    top: 57.5%;
 }
 }
 `;
@@ -143,7 +207,7 @@ padding: 2px;
 transition: 300ms;
 
 &:hover{
-    background-color: greenyellow;
+    background-color: #D4EFDF;
     }
 `;
 
@@ -226,13 +290,30 @@ outline: none;
 font-weight: bold;
 min-width: 300px;
 
+&:hover, &:focus{
+    box-shadow: #D4EFDF 0px -30px 36px -28px inset;
+}
+
 &:last-child{
-background-color: #147935;
+background-color: ${props => props.theme.background};
 font-size: 1.2rem;
-color: white;
-cursor: pointer;
-border: none;
+color:  ${props => props.theme.color};;
+cursor: ${props => props.theme.cursor};
+border: ${props => props.theme.border};;
 padding: 0;
+transition: 300ms;
+
+&:hover{
+    box-shadow: none;
+    background-color:  #D4EFDF;
+    color: green;
+    border: 2px solid green
+}
+
+&:focus{
+    box-shadow: none;
+}
+
 }
 
 `;
