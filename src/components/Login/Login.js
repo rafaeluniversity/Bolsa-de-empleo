@@ -52,6 +52,7 @@ export const Login = () => {
                 }
 
             });
+        setButton(false);
     }
 
 
@@ -297,9 +298,9 @@ min-width: 300px;
 &:last-child{
 background-color: ${props => props.theme.background};
 font-size: 1.2rem;
-color:  ${props => props.theme.color};;
+color:  ${props => props.theme.color};
 cursor: ${props => props.theme.cursor};
-border: ${props => props.theme.border};;
+border: ${props => props.theme.border};
 padding: 0;
 transition: 300ms;
 

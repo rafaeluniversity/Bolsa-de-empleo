@@ -7,7 +7,7 @@ import {
 import { RegistroApp } from './components/Registro/RegistroApp';
 import Login from './components/Login/Login';
 import EmailConfirmation from './components/Registro/EmailConfirmation';
-
+import Publication from './components/Publication/Publication';
 
 export const AppRouter = () => {
     return (
@@ -20,6 +20,9 @@ export const AppRouter = () => {
             </Routes>
             <Routes>
                 <Route path="/emailconfirmation" element={<EmailConfirmation />} />
+            </Routes>
+            <Routes>
+                <Route path="/publication" element={<Publication />} />
             </Routes>
         </Router >
     );

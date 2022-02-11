@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import instance from '../utils/Instance';
-import styled, { ThemeProvider } from "styled-components";
+import styled from "styled-components";
 import background from "../../assets/img/ed-259-Zm-CkDSKC1M-unsplash.jpg";
 
 
@@ -92,6 +92,7 @@ export const RegistroApp = () => {
 
 
                     <Input
+                        autoComplete="off"
                         type="text"
                         name="numeroidentificacion"
                         maxLength={13}
@@ -100,6 +101,7 @@ export const RegistroApp = () => {
                         onChange={createChangeHandler}
                     />
                     <Input
+                        autoComplete="off"
                         type="text"
                         name="nombrecompleto"
                         value={objRegister.nombrecompleto}
@@ -107,6 +109,7 @@ export const RegistroApp = () => {
                         placeholder="Nombre reprersentante"
                     />
                     <Input
+                        autoComplete="off"
                         type="text"
                         name="razon_social"
                         value={objRegister.razon_social}
