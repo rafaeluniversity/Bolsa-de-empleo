@@ -16,8 +16,17 @@ export const HeaderPublication = () => {
                     <ImgEmpleo src={background2} alt="user img">
                     </ImgEmpleo>
                     <Span>Trabajo</Span>
-                    <Title type="text" placeholder='Escriba aqui el titulo del empleo (max. 60 caracteres)' />
-                    <Ubicacion type="text" placeholder='Ubicación' />
+
+                    <Title
+                        type="text"
+                        name="nombre"
+                        placeholder='Escriba aqui el titulo del empleo (max. 60 caracteres)'
+                    />
+
+                    <Ubicacion
+                        type="text"
+                        placeholder='Ubicación'
+                    />
                 </InfoHeader>
             </Header>
 
