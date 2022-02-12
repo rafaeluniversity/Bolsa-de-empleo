@@ -1,10 +1,57 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavbarPublication } from './NavbarPublication';
 import styled from "styled-components";
+import instance from '../utils/Instance';
 
 
 
 export const DetalleEmpleo = () => {
+
+    const [objPublication, setObjPublication] = useState({
+        empresaId: 0,
+        nombre: '',
+        descripcion: '',
+        informacion_adicional: '',
+
+        requisitos: {
+            titulaciones: '',
+            competencias: '',
+            idiomas: {},
+        },
+
+        habilidades: {
+            habilidades: ''
+        },
+
+        condicion_laboral: {
+            general: '',
+            funciones: '',
+            formacion: '',
+            experiencias: '',
+            tipo_contrato: '',
+            horario_contrato: ''
+        },
+
+        ofrecemos: ''
+    });
+
+    const createChangeHandler = e => {
+        const { name } = e.target.id;
+        const value = document.getElementById(name).innerHTML;
+        setObjPublication(prev => ({ ...prev, [name]: value }));
+    };
+
+    function saveRegistro() {
+        console.log(objPublication);
+        instance.post('/usuario/create', objPublication)
+            .then(resp => {
+                if (resp.data.statusCode === 200) {
+                    alert('creado');
+                } else {
+                    console.log('Hubo un error');
+                }
+            });
+    }
 
     return (
         <Container>
@@ -13,55 +60,53 @@ export const DetalleEmpleo = () => {
                 <Ghost id='detalle' ></Ghost>
                 <h1>Detalle de la oferta:</h1>
 
-                <span contentEditable="true">Escriba aquí una descripción referente a la oferta de empleo.</span>
+                <p contentEditable="true">{objPublication.condicion_laboral.general}</p>
 
                 <h3>Principales funciones:</h3>
                 <p contentEditable="true">
                     <ul>
-                        <li>Escriba sus funciones aquí ( Pulsando la tecla Enter se crea otro elemento de lista ).</li>
+                        <li>{objPublication.condicion_laboral.funciones}</li>
                     </ul>
                 </p>
                 <h3>Formación y requisitos del puesto:</h3>
                 <p contentEditable="true">
                     <ul>
-                        <li>Escriba los requisitos del puesto (nacionales e internacionales)</li>
+                        <li>{objPublication.condicion_laboral.formacion}</li>
                     </ul>
                 </p>
                 <h3 className='segmetation'>Experiencias:</h3>
                 <p contentEditable="true">
-                    Escriba la experiencia necesaria para ejercer el empleo.
+                    {objPublication.condicion_laboral.experiencias}
                 </p>
                 <h3>Habilidades:</h3>
                 <p contentEditable="true">
                     <ul>
-                        <li>Escriba las habilidades necesarias para acceder a la oferta.</li>
+                        <li> {objPublication.habilidades.habilidades}</li>
                     </ul>
                 </p>
                 <h3>Ofrecemos:</h3>
                 <p contentEditable="true">
                     <ul>
-                        <li>Escriba los beneficios que se podran obtener de la oferta.</li>
+                        <li id="ofrecemos" onChange={createChangeHandler}> {objPublication.ofrecemos} </li>
                     </ul>
                 </p>
                 <h3>Información adicional:</h3>
                 <p contentEditable="true">
-                    Escriba información adicional que le parezca sensata hacer saber.
+                    {objPublication.informacion_adicional}
                 </p>
 
                 <Ghost id='requisitos' ></Ghost>
                 <h1 >Requisitos:</h1>
                 <h4>Titulaciones para la oferta</h4>
                 <p contentEditable="true">
-                    <div className='classrequisitos'>
-                        <ul>
-                            <li>Establezca los requisitos para el empleo</li>
-                        </ul>
-                    </div>
+                    <ul>
+                        <li>{objPublication.requisitos.titulaciones}</li>
+                    </ul>
                 </p>
 
                 <h3 className='segmetation'>Competencias:</h3>
                 <p contentEditable="true">
-                    Escriba las competencias laborales que necesita.
+                    {objPublication.requisitos.competencias}
                 </p>
 
                 <h3 className='segmetation'>Idiomas requeridos:</h3>
@@ -74,10 +119,10 @@ export const DetalleEmpleo = () => {
                 <h1 >Condiciones laborales:</h1>
 
                 <h3 className='segmetation'>Tipo de contrato</h3>
-                <p contentEditable="true">Establezca el tipo de contrato a emplear.</p>
+                <p contentEditable="true">{objPublication.condicion_laboral.tipo_contrato}</p>
 
                 <h3 className='segmetation'>Horario de trabajo</h3>
-                <p contentEditable="true">Establezca el tipo de horario a emplear.</p>
+                <p contentEditable="true">{objPublication.condicion_laboral.horario_contrato}</p>
 
                 <button className="segmetation">Crear registro</button>
             </ContainerPublication>
@@ -131,19 +176,7 @@ p, span{
 li {
     margin-left: 2em;
 }
-
-
-.classrequisitos{
-    display: flex;
-
-    ul {
-        text-align: left;
-        margin-left: 2em;
-        li{
-            margin: 0.5em 0;
-        }
-    }
-}`;
+`;
 
 
 
