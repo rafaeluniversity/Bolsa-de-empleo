@@ -2,75 +2,80 @@ import React from "react";
 import styled from "styled-components";
 import img from "../assets/img/ed-259-Zm-CkDSKC1M-unsplash.jpg";
 import { FaArrowRight, FaRegClock } from 'react-icons/fa';
+import TopNavbar from './TopNavbar';
+import Filtro from './Filtro';
 
 class ListEmpleo extends React.Component {
     render() {
         return (
-            <Main>
-                <Title>
-                    Empleos Recientes
-                </Title>
-                <Container>
-                    <List>
-                        <Employed>
-                            <Img src={img}></Img>
-                            <Info>
-                                <InfoEmployed>
-                                    <TitleEmployed>Analista Financiero</TitleEmployed>
-                                    <Label>Trabajo</Label>
-                                </InfoEmployed>
-                                <InfoStatus>
-                                    <State>Banco Pichincha</State>
-                                    <State>Portoviejo</State>
-                                    <State class="latest-state"><FaRegClock class="clock" /> Hace una hora</State>
-                                    <ViewEmployed> <FaArrowRight class="icon" /></ViewEmployed>
-                                </InfoStatus>
-                            </Info>
-                        </Employed>
+            <div>
+                <TopNavbar></TopNavbar>
+                <Filtro></Filtro>
+                <Main>
+                    <Title>
+                        Empleos Recientes
+                    </Title>
+                    <Container>
+                        <List>
+                            <Employed>
+                                <Img src={img}></Img>
+                                <Info>
+                                    <InfoEmployed>
+                                        <TitleEmployed>Analista Financiero</TitleEmployed>
+                                        <Label>Trabajo</Label>
+                                    </InfoEmployed>
+                                    <InfoStatus>
+                                        <State>Banco Pichincha</State>
+                                        <State>Portoviejo</State>
+                                        <State class="latest-state"><FaRegClock class="clock" /> Hace una hora</State>
+                                        <ViewEmployed> <FaArrowRight class="icon" /></ViewEmployed>
+                                    </InfoStatus>
+                                </Info>
+                            </Employed>
 
-                        <Employed>
-                            <Img src={img}></Img>
-                            <Info>
-                                <InfoEmployed>
-                                    <TitleEmployed>Analista Financiero</TitleEmployed>
-                                    <Label>Trabajo</Label>
-                                </InfoEmployed>
-                                <InfoStatus>
-                                    <State>Banco Pichincha</State>
-                                    <State>Portoviejo</State>
-                                    <State class="latest-state"><FaRegClock class="clock" /> Hace una hora</State>
-                                    <ViewEmployed> <FaArrowRight class="icon" /></ViewEmployed>
-                                </InfoStatus>
-                            </Info>
-                        </Employed>
+                            <Employed>
+                                <Img src={img}></Img>
+                                <Info>
+                                    <InfoEmployed>
+                                        <TitleEmployed>Analista Financiero</TitleEmployed>
+                                        <Label>Trabajo</Label>
+                                    </InfoEmployed>
+                                    <InfoStatus>
+                                        <State>Banco Pichincha</State>
+                                        <State>Portoviejo</State>
+                                        <State class="latest-state"><FaRegClock class="clock" /> Hace una hora</State>
+                                        <ViewEmployed> <FaArrowRight class="icon" /></ViewEmployed>
+                                    </InfoStatus>
+                                </Info>
+                            </Employed>
 
-                        <More>
-                            <MoreButton>Más Empleos</MoreButton>
-                        </More>
-                    </List>
-                    <Published>
-                        <Subtitle>Sobre Nosotros</Subtitle>
-                        <P>"Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                            sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                            nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-                            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                            Excepteur sint occaecat cupidatat non proident, sunt
-                            in culpa qui officia deserunt mollit anim id est laborum."</P>
-                        <P>"Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                            sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                            nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-                            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                            Excepteur sint occaecat cupidatat non proident, sunt
-                            in culpa qui officia deserunt mollit anim id est laborum."</P>
+                            <More>
+                                <MoreButton>Más Empleos</MoreButton>
+                            </More>
+                        </List>
+                        <Published>
+                            <Subtitle>Sobre Nosotros</Subtitle>
+                            <P>"Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+                                reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                                Excepteur sint occaecat cupidatat non proident, sunt
+                                in culpa qui officia deserunt mollit anim id est laborum."</P>
+                            <P>"Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+                                reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                                Excepteur sint occaecat cupidatat non proident, sunt
+                                in culpa qui officia deserunt mollit anim id est laborum."</P>
 
-                        <ImgPublished src={img} />
-                        <ImgPublished src={img} />
-                    </Published>
-                </Container>
-            </Main>
-
+                            <ImgPublished src={img} />
+                            <ImgPublished src={img} />
+                        </Published>
+                    </Container>
+                </Main>
+            </div>
         );
     }
 }

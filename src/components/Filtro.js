@@ -29,7 +29,7 @@ export default Filtro;
 
 
 const Banner = styled.div`
-margin-top: 6em;
+
 display: flex;
 flex-direction: column;
 align-items: center;

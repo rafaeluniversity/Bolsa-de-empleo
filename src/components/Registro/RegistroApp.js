@@ -3,7 +3,6 @@ import instance from '../utils/Instance';
 import styled from "styled-components";
 import background from "../../assets/img/ed-259-Zm-CkDSKC1M-unsplash.jpg";
 
-
 const LogoUtm = "https://www.utm.edu.ec/images/pagina_nueva/logo.png";
 
 export const RegistroApp = () => {
@@ -58,7 +57,6 @@ export const RegistroApp = () => {
             .then(resp => {
                 if (resp.data.statusCode === 200) {
                     alert('creado');
-                    window.location.href = '/emailconfirmation';
                 } else {
                     console.log('Hubo un error');
                 }

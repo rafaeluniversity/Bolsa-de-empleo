@@ -1,14 +1,15 @@
 import React from "react";
 import styled from "styled-components";
 import background from "../../assets/img/ed-259-Zm-CkDSKC1M-unsplash.jpg";
-import Navbar from "../Navbar";
+import TopNavbar from "../TopNavbar";
+import ListEmpleo from "../ListEmpleo";
 import { FaRegClock, FaArrowRight } from 'react-icons/fa';
 
 class AdvancedFilter extends React.Component {
     render() {
         return (
             <Container>
-                <Navbar></Navbar>
+                <TopNavbar></TopNavbar>
                 <Title>
                     Ofertas de empleos exclusivas para nuestros
                     graduados y emprendedores
@@ -34,24 +35,6 @@ class AdvancedFilter extends React.Component {
                     </div>
                     <Button>Buscar</Button>
                 </DivFilter>
-
-                <ListContainer>
-                    <DivEmployed>
-                        <Img src={background} />
-                        <InfoContainer>
-                            <div>
-                                <label>Arquitecto</label>
-                                <label class="label">trabajo</label>
-                            </div>
-                            <div class="info">
-                                <label>Arquitecto</label>
-                                <label>trabajo</label>
-                                <label class="time"><FaRegClock class="clock" /> Hace 10 horas</label>
-                                <ViewEmployed><FaArrowRight /></ViewEmployed>
-                            </div>
-                        </InfoContainer>
-                    </DivEmployed>
-                </ListContainer>
             </Container >
         );
     }
@@ -180,82 +163,4 @@ align-items: center;
 @media (max-width:1080px){
     width: 96%;
 }
-`;
-
-const DivEmployed = styled.div`
-position: relative;
-background-color: white;
-width: 720px;
-height: 120px;
-border: 1px solid gray;
-border-radius: 8px;
-display: flex;
-align-items: center;
-
-
-
-`;
-
-const Img = styled.img`
-width: 120px;
-height: 90px;
-padding: 0 1em;
-border-radius: 50%;
-`;
-
-const InfoContainer = styled.div`
-position: relative;
-display: flex;
-flex-direction: column;
-
-div{
-    width: 580px;
-    height: 50%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 0.5em 0;
-
-    .label{
-        background-color: #147935;
-        color: white;
-        border-radius: 8px;
-        width: 100px;
-        padding: 0.3em 1em;
-        display: flex;
-        border-right: 20px solid #FAC925;
-    }
-}
-.info{
-    justify-content: flex-start;
-}
-
-.info label {
-    width: 25%;
-    border-left: 2px gray solid;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-&:first-child {
-    border-left: none;
-    justify-content: flex-start;
-}
-
-    .clock{
-        width: 40px;
-    }
-    }
-
-.time {width:40px}
-`;
-
-const ViewEmployed = styled.a`
-position: absolute;
-right: 0;
-font-size: 26px;
-color: green;
-background-color: transparent;
-border: none;
-cursor: pointer;
 `;
