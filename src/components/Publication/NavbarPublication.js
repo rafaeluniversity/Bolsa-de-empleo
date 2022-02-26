@@ -1,12 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import { HeaderPublication } from './HeaderPublication';
-
 
 export const NavbarPublication = () => {
     return (
         <Container>
-            <HeaderPublication />
             <Nav className='menu-detalle-empleo'>
                 <NavOption href='#detalle' className="active">
                     Detalle

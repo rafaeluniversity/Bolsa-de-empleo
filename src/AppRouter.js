@@ -30,6 +30,9 @@ export const AppRouter = () => {
                 <Route path="/publication" element={<Publication />} />
             </Routes>
             <Routes>
+                <Route path="/publication/:id" element={<Publication />} />
+            </Routes>
+            <Routes>
                 <Route path="/filter" element={<AdvancedFiltro />} />
             </Routes>
         </Router >

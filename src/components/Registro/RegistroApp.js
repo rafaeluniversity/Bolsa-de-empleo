@@ -23,6 +23,9 @@ export const RegistroApp = () => {
     });
 
     useEffect(() => {
+        document.getElementById('razon_social').style.display = "none";
+        document.getElementById('observacion').style.display = "none";
+
         instance.get('/detallecatalogo/child/1')
             .then(resp => {
 
@@ -48,6 +51,16 @@ export const RegistroApp = () => {
         const { name } = e.target;
         const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
         setObjRegister(prev => ({ ...prev, [name]: value }));
+
+        if (name === 'ct_tipousuario' && (parseInt(value) === 5 || parseInt(value) === 6)) {
+            document.getElementById('razon_social').style.display = "block";
+            document.getElementById('observacion').style.display = "block";
+
+        } else {
+            document.getElementById('razon_social').style.display = "none";
+            document.getElementById('observacion').style.display = "none";
+
+        }
     };
 
 
@@ -62,7 +75,6 @@ export const RegistroApp = () => {
                 }
             });
     }
-
 
     return (
         <Container>
@@ -106,14 +118,33 @@ export const RegistroApp = () => {
                         onChange={createChangeHandler}
                         placeholder="Nombre reprersentante"
                     />
+
+                    <Select
+                        id="ct_tipousuario"
+                        name="ct_tipousuario"
+                        value={objRegister.ct_tipousuario}
+                        onChange={createChangeHandler}
+                    >
+                        <option disabled hidden value={0}>Tipo de Cuenta</option>
+                        {tipoUsuario.map((value, index) => {
+                            return (
+                                <option key={index + value.descripcion} value={value.id} >{value.descripcion}</option>
+                            );
+                        })
+
+                        }
+                    </Select>
+
                     <Input
                         autoComplete="off"
                         type="text"
+                        id="razon_social"
                         name="razon_social"
                         value={objRegister.razon_social}
                         onChange={createChangeHandler}
                         placeholder="Nombre o razón social"
                     />
+
                     <Input
                         type="email"
                         name="correo"
@@ -128,23 +159,11 @@ export const RegistroApp = () => {
                         onChange={createChangeHandler}
                         placeholder="Contraseña"
                     />
-                    <Select
-                        name="ct_tipousuario"
-                        value={objRegister.ct_tipousuario}
-                        onChange={createChangeHandler}
-                    >
-                        <option disabled hidden value={0}>Tipo de Cuenta</option>
-                        {tipoUsuario.map((value, index) => {
-                            return (
-                                <option key={index + value.descripcion} value={value.id} >{value.descripcion}</option>
-                            );
-                        })
 
-                        }
-                    </Select>
                     <TextArea
+                        id="observacion"
                         name="observacion"
-                        value={objRegister.observacion} onChange={createChangeHandler} id="" cols="30" rows="10" maxLength="255" placeholder="Describase a usted y a sus servicios">
+                        value={objRegister.observacion} onChange={createChangeHandler} cols="30" rows="10" maxLength="255" placeholder="Describase a usted y a sus servicios">
                     </TextArea>
                     <Button
                         type='button'
@@ -165,8 +184,8 @@ export default RegistroApp;
 
 const Container = styled.div`
 width: 100%;
-height: 120vh;
-min-height: 500px;
+height: auto;
+min-height: 100vh;
 min-width: 480px;
 background-image: url(${background});
 background-repeat: no-repeat;
@@ -183,10 +202,10 @@ const DivRegistro = styled.div`
 position: relative;
 background-color: white;
 width: auto;
-height: 110vh;
+height: auto;
 min-width: 400px;
 max-width: 540px;
-min-height: 500px;
+min-height: 400px;
 max-height: 800px;
 border-radius: 8px;
 padding: 1.5em 4em;

@@ -1,84 +1,216 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import img from "../assets/img/ed-259-Zm-CkDSKC1M-unsplash.jpg";
 import { FaArrowRight, FaRegClock } from 'react-icons/fa';
 import TopNavbar from './TopNavbar';
-import Filtro from './Filtro';
+import instance from './utils/Instance';
+import { FaSearch, FaMapMarkerAlt } from 'react-icons/fa';
+import fondo from "../assets/img/ed-259-Zm-CkDSKC1M-unsplash.jpg";
 
-class ListEmpleo extends React.Component {
-    render() {
-        return (
-            <div>
-                <TopNavbar></TopNavbar>
-                <Filtro></Filtro>
-                <Main>
-                    <Title>
-                        Empleos Recientes
-                    </Title>
-                    <Container>
-                        <List>
-                            <Employed>
-                                <Img src={img}></Img>
-                                <Info>
-                                    <InfoEmployed>
-                                        <TitleEmployed>Analista Financiero</TitleEmployed>
-                                        <Label>Trabajo</Label>
-                                    </InfoEmployed>
-                                    <InfoStatus>
-                                        <State>Banco Pichincha</State>
-                                        <State>Portoviejo</State>
-                                        <State class="latest-state"><FaRegClock class="clock" /> Hace una hora</State>
-                                        <ViewEmployed> <FaArrowRight class="icon" /></ViewEmployed>
-                                    </InfoStatus>
-                                </Info>
-                            </Employed>
 
-                            <Employed>
-                                <Img src={img}></Img>
-                                <Info>
-                                    <InfoEmployed>
-                                        <TitleEmployed>Analista Financiero</TitleEmployed>
-                                        <Label>Trabajo</Label>
-                                    </InfoEmployed>
-                                    <InfoStatus>
-                                        <State>Banco Pichincha</State>
-                                        <State>Portoviejo</State>
-                                        <State class="latest-state"><FaRegClock class="clock" /> Hace una hora</State>
-                                        <ViewEmployed> <FaArrowRight class="icon" /></ViewEmployed>
-                                    </InfoStatus>
-                                </Info>
-                            </Employed>
+export const ListEmpleo = () => {
+    const [listaPublicaciones, setlistaPublicaciones] = useState({});
+    const [filtro, setFiltro] = useState({
+        especialidad_id: 0,
+        subespecialidad_id: 0,
+        ubicacionId: "",
+        palabraclave: ""
+    });
 
-                            <More>
-                                <MoreButton>Más Empleos</MoreButton>
-                            </More>
-                        </List>
-                        <Published>
-                            <Subtitle>Sobre Nosotros</Subtitle>
-                            <P>"Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-                                reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                                Excepteur sint occaecat cupidatat non proident, sunt
-                                in culpa qui officia deserunt mollit anim id est laborum."</P>
-                            <P>"Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-                                reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                                Excepteur sint occaecat cupidatat non proident, sunt
-                                in culpa qui officia deserunt mollit anim id est laborum."</P>
+    useEffect(() => {
+        instance.get('/publicaciones/list/last')
+            .then(resp => {
+                if (resp.data.statusCode === 200) {
+                    setlistaPublicaciones(resp.data.data);
+                } else {
+                    console.log('Hubo un error');
+                }
+            });
+    }, []);
 
-                            <ImgPublished src={img} />
-                            <ImgPublished src={img} />
-                        </Published>
-                    </Container>
-                </Main>
-            </div>
-        );
-    }
+    const createChangeHandler = e => {
+        const { name } = e.target;
+        const value = e.target.value;
+        setFiltro(prev => ({ ...prev, [name]: value }));
+
+    };
+
+    const send = () => {
+        let aux;
+        if (filtro.palabraclave === "") {
+            aux = "*";
+        } else { aux = filtro.palabraclave; };
+        console.log(filtro);
+        instance.get('/publicaciones/filter/0/0/0/' + aux)
+            .then(resp => {
+                if (resp.data.statusCode === 200) {
+                    setlistaPublicaciones(resp.data.data);
+                } else {
+                    console.log('Hubo un error');
+                }
+            });
+    };
+
+    function calcFecha(variable) {
+        variable = variable.replace(/-/g, '/');
+        var hoy = new Date();
+        var date = new Date(variable);
+
+        var tiempoPasado = hoy - date;
+
+        var segs = 1000;
+        var mins = segs * 60;
+        var hours = mins * 60;
+        var days = hours * 24;
+        var months = days * 30.416666666666668;
+        var years = months * 12;
+
+        //calculo 
+        var anios = Math.floor(tiempoPasado / years);
+
+        tiempoPasado = tiempoPasado - (anios * years);
+        var meses = Math.floor(tiempoPasado / months);
+
+        tiempoPasado = tiempoPasado - (meses * months);
+        var dias = Math.floor(tiempoPasado / days);
+
+        tiempoPasado = tiempoPasado - (dias * days);
+        var horas = Math.floor(tiempoPasado / hours);
+
+        tiempoPasado = tiempoPasado - (horas * hours);
+        var minutos = Math.floor(tiempoPasado / mins);
+
+        tiempoPasado = tiempoPasado - (minutos * mins);
+
+        var tiempo;
+
+        switch (true) {
+
+            case anios > 0:
+                let tanio = ' años';
+                if (anios === 1) {
+                    tanio = ' año';
+                }
+                tiempo = "hace " + anios + tanio;
+                break;
+
+            case meses > 0:
+                let tmes = ' meses';
+                if (meses === 1) {
+                    tmes = ' mes';
+                }
+                tiempo = "hace " + meses + tmes;
+                break;
+
+            case dias > 0:
+                let tdia = ' días';
+                if (dias === 1) {
+                    tdia = ' día';
+                }
+                tiempo = "hace " + dias + tdia;
+                break;
+            default: tiempo = "hoy";
+                break;
+        }
+        return tiempo;
+    };
+
+
+
+    return (
+        <div>
+            <TopNavbar></TopNavbar>
+
+            <Banner>
+                <Titletwo>
+                    Ofertas de empleo exculsivas
+                    para nuestros graduados y emprendedores
+                </Titletwo>
+
+                <Filter>
+
+                    <Input
+                        className="first"
+                        name="palabraclave"
+                        type="text"
+                        value={filtro.palabraclave}
+                        onChange={createChangeHandler}
+                        placeholder="Puesto o empleo"
+                    />
+
+                    <FaSearch className='search' />
+
+                    <FaMapMarkerAlt className='map' />
+
+                    <Input
+                        name="ubicacionId"
+                        onChange={createChangeHandler}
+                        value={filtro.ubicacionId}
+                        type="text"
+                        placeholder="Ubicación"
+                    />
+
+                    <Submit type="button" value="Buscar" onClick={send} />
+                </Filter>
+            </Banner>
+
+            <Main>
+                <Title>
+                    Empleos Recientes
+                </Title>
+                <Container>
+                    <List>
+                        {Object.values(listaPublicaciones).map((publicacion) => {
+                            return (
+                                <Employed key={publicacion.publicacionid + publicacion.titulo} onClick={() => window.location.href = '/publication/' + publicacion.publicacionid}>
+                                    <Img src={img}></Img>
+                                    <Info>
+                                        <InfoEmployed>
+                                            <TitleEmployed>{publicacion.titulo}</TitleEmployed>
+                                            <Label>Trabajo</Label>
+                                        </InfoEmployed>
+                                        <InfoStatus>
+                                            <State>{publicacion.nombreempresa}</State>
+                                            <State>Portoviejo</State>
+                                            <State className="latest"><FaRegClock className="clock" /> {calcFecha(publicacion.fecha)}</State>
+                                            <ViewEmployed > <FaArrowRight className="icon" /></ViewEmployed>
+                                        </InfoStatus>
+                                    </Info>
+                                </Employed>
+
+                            );
+                        })}
+
+                        <More>
+                            <MoreButton>Más Empleos</MoreButton>
+                        </More>
+                    </List>
+                    <Published>
+                        <Subtitle>Sobre Nosotros</Subtitle>
+                        <P>"Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                            sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                            nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+                            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                            Excepteur sint occaecat cupidatat non proident, sunt
+                            in culpa qui officia deserunt mollit anim id est laborum."</P>
+                        <P>"Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                            sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                            nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+                            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                            Excepteur sint occaecat cupidatat non proident, sunt
+                            in culpa qui officia deserunt mollit anim id est laborum."</P>
+
+                        <ImgPublished src={img} />
+                        <ImgPublished src={img} />
+                    </Published>
+                </Container>
+            </Main>
+        </div >
+    );
 }
+    ;
 
 export default ListEmpleo;
 
@@ -116,9 +248,8 @@ min-height: 100vh;
 position: relative;
 `;
 
-const Employed = styled.div`
+const Employed = styled.button`
 display: flex;
-
 margin: 1em 0;
 height: 120px;
 background-color: white;
@@ -126,11 +257,18 @@ border: 1px darkgrey solid;
 border-radius: 8px;
 box-shadow: -5px 10px 10px -6px black;
 padding: 1em;
+transition: 300ms;
+
+&:hover {
+    transform: scale(1.02);
+
+}
 `;
 
 const Img = styled.img`
 height:100%;
-border-radius: 2em;
+width: 100px;
+border-radius: 50%;
 border: 1px solid black;
 `;
 
@@ -171,11 +309,17 @@ display: flex;
 align-items: center;
 height: 50%;
 width: 100%;
+
+.latest{
+   justify-content:left;
+   padding-left: 1em;
+}
+
 `;
 
 const State = styled.label`
 display: flex;
-justify-content: center;
+justify-content:  center;
 align-items: center;
 color: gray;
 width: 160px;
@@ -185,14 +329,17 @@ font-weight: 600;
 
 &:first-child{
     border-left: none;
+    justify-content: flex-start;
+    padding-left: 1.8rem;
 }
 
 .clock {
 margin-right: 0.4em;
 }
+
 `;
 
-const ViewEmployed = styled.button`
+const ViewEmployed = styled.a`
 width: 60px;
 height: 30px;
 margin-left: 5em;
@@ -206,10 +353,6 @@ color: green;
 font-size: 30px;
 height: 26px;
 width: 70px;
-}
-
-&:hover{
-    transform: rotate(360deg);
 }
 `;
 
@@ -269,4 +412,87 @@ border-radius: 4px;
     border: 2px solid green;
 }
 
+`;
+
+//
+
+const Banner = styled.div`
+
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+height: 70vh;
+background-color: antiquewhite;
+background-image: url(${fondo});
+background-size: 100% 100%;
+background-repeat: no-repeat;
+`;
+
+const Titletwo = styled.h1`
+text-align: center;
+color: white;
+text-shadow: 0.1em 0.1em 0.05em #333;
+width: 50%;
+border-bottom: 2px white solid;
+padding: 1em;
+margin-top: -1em;
+`;
+
+const Filter = styled.form`
+display: flex;
+align-items: center;
+height: 3.5em;
+width: 60%;
+margin-top: 2em;
+
+
+.map , .search {
+   color : gray;
+   font-size: 30px;
+   position: absolute;
+   opacity: 0.8;
+}
+
+.map {
+    left: 45.5%;
+}
+
+.search {
+    left: 21.5%;
+}
+`;
+
+const Input = styled.input`
+width: 40%;
+height: 100%;
+padding: 0 2em 0 4em;
+border: 1px gray solid;
+outline: none;
+font-size: 16px;
+
+&:first-child{
+border-top-left-radius: 8px;
+border-bottom-left-radius: 8px;
+}
+`;
+
+const Submit = styled.input`
+width:20%;
+height: 100%;
+font-size: 18px;
+background-color: green;
+border: none;
+color: white;
+font-weight: bold;
+border-top-right-radius: 8px;
+border-bottom-right-radius: 8px;
+cursor: pointer;
+transition: 300ms;
+
+&:hover {
+  background-color:  #DAF7A6;
+  color: Green;
+  border: 1px green solid;
+}
 `;
