@@ -80,7 +80,7 @@ export const RegistroApp = () => {
         <Container>
             <DivRegistro>
                 <DivHeader>
-                    <LinkHome href="#"><Logo src={LogoUtm} /></LinkHome>
+                    <LinkHome href="/"><Logo src={LogoUtm} /></LinkHome>
                     <h1>Registrate</h1>
                 </DivHeader>
 
