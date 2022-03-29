@@ -41,6 +41,7 @@ export const Login = () => {
                         localStorage.setItem('token', JSON.stringify(data.token));
                         console.log(JSON.parse(localStorage.getItem('token')));
                         alert('Logueado');
+                        window.location.href = "/";
                     } else {
                         console.log(data);
                         console.log('Hubo un error - Cuenta no activada');
