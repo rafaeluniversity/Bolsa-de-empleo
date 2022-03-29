@@ -4,10 +4,22 @@ import Logo from "../assets/img/logo.png";
 
 
 export const TopNavbar = () => {
+
+    const isLoggedIn = true;
+    let button;
+
+    if (isLoggedIn) {
+        button = <LoginButton href='/login'>Iniciar Sesión</LoginButton >;
+    } else {
+        //User options
+        button = <UserOptions />;
+    }
+
     return (
         <Container>
             <LogoContainer src={Logo} />
-            <UserOptions></UserOptions>
+            {button}
+
         </Container >
     );
 
@@ -37,4 +49,12 @@ width:  4em;
 height: 4em;
 border: 1px solid gray;
 border-radius: 100%;
+`;
+
+const LoginButton = styled.a`
+text-decoration: none;
+color: green;
+cursor: pointer;
+font-size: 1.2rem;
+font-weight: 700;
 `;
