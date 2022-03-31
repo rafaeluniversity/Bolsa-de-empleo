@@ -17,6 +17,8 @@ export const ListEmpleo = () => {
         palabraclave: ""
     });
 
+    const publicationIn = localStorage.getItem('token') ? <LinkPublication href="/publication">Publicar Empleo</LinkPublication> : "";
+
     useEffect(() => {
         instance.get('/publicaciones/list/last')
             .then(resp => {
@@ -152,6 +154,7 @@ export const ListEmpleo = () => {
 
                     <Submit type="button" value="Buscar" onClick={send} />
                 </Filter>
+                <div> <LinkPublication href="/filter">Búsqueda Avanzada</LinkPublication> {publicationIn}</div>
             </Banner>
 
             <Main>
@@ -427,6 +430,13 @@ background-color: antiquewhite;
 background-image: url(${fondo});
 background-size: 100% 100%;
 background-repeat: no-repeat;
+
+div{
+    display: flex;
+    justify-content: space-between;
+    width: 60%;
+    padding: 1rem 1.2rem;
+}
 `;
 
 const Titletwo = styled.h1`
@@ -496,3 +506,10 @@ transition: 300ms;
   border: 1px green solid;
 }
 `;
+
+const LinkPublication = styled.a`
+color: white;
+cursor: pointer;
+font-size: 1.1rem;
+font-weight: 900;
+text-align: right;`;
