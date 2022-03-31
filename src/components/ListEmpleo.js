@@ -6,6 +6,7 @@ import TopNavbar from './TopNavbar';
 import instance from './utils/Instance';
 import { FaSearch, FaMapMarkerAlt } from 'react-icons/fa';
 import fondo from "../assets/img/ed-259-Zm-CkDSKC1M-unsplash.jpg";
+import { decodeJWT } from "./utils/Utils";
 
 
 
@@ -18,7 +19,8 @@ export const ListEmpleo = () => {
         palabraclave: ""
     });
 
-    const publicationIn = localStorage.getItem('token') ? <LinkPublication href="/publication">Publicar Empleo</LinkPublication> : "";
+    const tipoUser = decodeJWT(localStorage.getItem('token')).tipousuario;
+    const publicationIn = localStorage.getItem('token') && (tipoUser === 'EMP' || tipoUser === 'EMD') ? <LinkPublication href="/publication">Publicar Empleo</LinkPublication> : "";
 
     useEffect(() => {
         instance.get('/publicaciones/list/last')
@@ -28,6 +30,7 @@ export const ListEmpleo = () => {
                 } else {
                     console.log('Hubo un error');
                 }
+                console.log(tipoUser);
             });
     }, []);
 

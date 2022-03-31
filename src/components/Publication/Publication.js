@@ -7,12 +7,15 @@ import CardDetalleEmpleo from './CardDetalleEmpleo';
 import background from "../../assets/img/ed-259-Zm-CkDSKC1M-unsplash.jpg";
 import background2 from "../../assets/img/descarga.jpg";
 import TopNavbar from "../TopNavbar";
-
+import { decodeJWT } from "../utils/Utils";
 
 
 export function DetalleEmpleo() {
     const { id } = useParams();
-
+    const [edit, setEdit] = useState(false);
+    const tipoUser = decodeJWT(localStorage.getItem('token')).tipousuario;
+    const empresaID = decodeJWT(localStorage.getItem('token')).empresaId;
+    let EditOn = (tipoUser === 'EMP' || tipoUser === 'EMD') ? true : false;
 
     let [objPublication, setObjPublication] = useState({
         nombre: '',
@@ -38,6 +41,7 @@ export function DetalleEmpleo() {
 
 
     useEffect(() => {
+
         if (id > 0) {
             instance.get('/publicaciones/findById/' + id)
                 .then(resp => {
@@ -53,9 +57,13 @@ export function DetalleEmpleo() {
                             ofrecemos,
                             especialidad_id: parseInt(resp.data.data.especialidad_id),
                             subespecialidad_id: parseInt(resp.data.data.subespecialidad_id),
-                            empresa_id: 1,
+                            empresa_id: decodeJWT(localStorage.getItem('token')).empresaId,
                         };
                         setObjPublication(data);
+                        if (EditOn && data.empresa_id === empresaID) {
+                            setEdit(true);
+                            console.log(EditOn);
+                        }
                     } else {
                         console.log('Hubo un error');
                     }
@@ -162,7 +170,7 @@ export function DetalleEmpleo() {
                     <p
                         id='descripcion'
                         className='fake-textarea'
-                        contentEditable={true}
+                        contentEditable={edit}
                         onInput={handleInputChange}
                     >{objPublication.descripcion}
                     </p>
@@ -175,7 +183,7 @@ export function DetalleEmpleo() {
                     <ul
                         id='TITULACIONES'
                         className='fake-textarea'
-                        contentEditable
+                        contentEditable={edit}
                         onInput={requisitosInputChange}
                         suppressContentEditableWarning={true}
                     >
@@ -191,7 +199,7 @@ export function DetalleEmpleo() {
                     <ul
                         id='COMPETENCIAS'
                         className='fake-textarea'
-                        contentEditable
+                        contentEditable={edit}
                         onInput={requisitosInputChange}
                         suppressContentEditableWarning={true}
                     >
@@ -206,7 +214,7 @@ export function DetalleEmpleo() {
                     <ul
                         id='EXPERIENCIA'
                         className='fake-textarea'
-                        contentEditable
+                        contentEditable={edit}
                         onInput={requisitosInputChange}
                         suppressContentEditableWarning={true}
                     >
@@ -221,7 +229,7 @@ export function DetalleEmpleo() {
                     <ul
                         id='IDIOMAS'
                         className='fake-textarea'
-                        contentEditable
+                        contentEditable={edit}
                         onInput={requisitosInputChange}
                         suppressContentEditableWarning={true}
                     >
@@ -236,7 +244,7 @@ export function DetalleEmpleo() {
                     <ul
                         id='habilidades'
                         className='fake-textarea'
-                        contentEditable
+                        contentEditable={edit}
                         suppressContentEditableWarning={true}
                         onInput={obtenerHabilidades}
                     >
@@ -254,7 +262,7 @@ export function DetalleEmpleo() {
                     <p
                         id='JORNADA'
                         className='fake-textarea'
-                        contentEditable
+                        contentEditable={edit}
                         onInput={condicionesInputChange}
                     >
                         {objPublication.condicion_laboral.JORNADA}
@@ -264,7 +272,7 @@ export function DetalleEmpleo() {
                     <p
                         id='TIPO_CONTRATO'
                         className='fake-textarea'
-                        contentEditable
+                        contentEditable={edit}
                         onInput={condicionesInputChange}
                     >
                         {objPublication.condicion_laboral.TIPO_CONTRATO}
@@ -274,7 +282,7 @@ export function DetalleEmpleo() {
                     <p
                         id='HORARIO'
                         className='fake-textarea'
-                        contentEditable
+                        contentEditable={edit}
                         onInput={condicionesInputChange}
                     >
                         {objPublication.condicion_laboral.HORARIO}
@@ -284,7 +292,7 @@ export function DetalleEmpleo() {
                     <p
                         id='REMUNERACION'
                         className='fake-textarea'
-                        contentEditable
+                        contentEditable={edit}
                         onInput={condicionesInputChange}
                     >
                         {objPublication.condicion_laboral.REMUNERACION}
@@ -294,7 +302,7 @@ export function DetalleEmpleo() {
                     <p
                         id='ofrecemos'
                         className='fake-textarea'
-                        contentEditable
+                        contentEditable={edit}
                         onInput={handleInputChange}
                     >
                         {objPublication.ofrecemos}
