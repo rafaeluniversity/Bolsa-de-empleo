@@ -60,7 +60,7 @@ export const Login = () => {
     return (
         <Container>
             <DivLogin>
-                <LinkHome href="#"><Logo src={LogoUtm} /></LinkHome>
+                <LinkHome href="/"><Logo src={LogoUtm} /></LinkHome>
                 <FormLogin>
                     <div><Label>Inicia Sesión</Label>
                         <Label>Postulante</Label></div>

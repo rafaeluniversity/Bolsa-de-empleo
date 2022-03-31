@@ -5,19 +5,23 @@ import Logo from "../assets/img/logo.png";
 
 export const TopNavbar = () => {
 
-    const isLoggedIn = true;
+    function clearStorage() {
+        localStorage.removeItem('token');
+    }
+
+    const isLoggedIn = localStorage.getItem('token');
     let button;
 
-    if (isLoggedIn) {
+    if (isLoggedIn === "" || isLoggedIn === null) {
         button = <LoginButton href='/login'>Iniciar Sesión</LoginButton >;
     } else {
         //User options
-        button = <UserOptions />;
-    }
+        button = <LoginButton href='/login' onClick={clearStorage} > Cerrar Sesión</LoginButton >;
+    };
 
     return (
         <Container>
-            <LogoContainer src={Logo} />
+            <a href="/"><LogoContainer src={Logo} /></a>
             {button}
 
         </Container >

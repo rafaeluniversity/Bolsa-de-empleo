@@ -116,6 +116,7 @@ export function DetalleEmpleo() {
             .then(resp => {
                 if (resp.data.statusCode === 200) {
                     alert('creado');
+                    window.location.href = "/";
                 } else {
                     console.log('Hubo un error');
                 }
