@@ -8,6 +8,7 @@ import { FaSearch, FaMapMarkerAlt } from 'react-icons/fa';
 import fondo from "../assets/img/ed-259-Zm-CkDSKC1M-unsplash.jpg";
 
 
+
 export const ListEmpleo = () => {
     const [listaPublicaciones, setlistaPublicaciones] = useState({});
     const [filtro, setFiltro] = useState({
@@ -52,6 +53,7 @@ export const ListEmpleo = () => {
                 }
             });
     };
+
 
     function calcFecha(variable) {
         variable = variable.replace(/-/g, '/');
