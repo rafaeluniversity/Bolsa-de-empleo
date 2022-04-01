@@ -52,7 +52,7 @@ export const RegistroApp = () => {
         const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
         setObjRegister(prev => ({ ...prev, [name]: value }));
 
-        if (name === 'ct_tipousuario' && (parseInt(value) === 5 || parseInt(value) === 6)) {
+        if ((parseInt(document.getElementById('ct_tipousuario').value) === 5 || parseInt(document.getElementById('ct_tipousuario').value) === 6)) {
             document.getElementById('razon_social').style.display = "block";
             document.getElementById('observacion').style.display = "block";
 
