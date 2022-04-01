@@ -32,7 +32,6 @@ export const Login = () => {
 
     function Login() {
         setButton(true);
-        console.log(objUser);
         instance.post('/usuario/login', objUser)
             .then(resp => {
                 const data = resp.data.data;
@@ -49,6 +48,7 @@ export const Login = () => {
                     }
                 } else {
                     console.log('Hubo un error - Contraseña o correo incorrectos');
+                    alert('Hubo un error - Contraseña o correo incorrectos');
                     setButton(false);
                 }
 

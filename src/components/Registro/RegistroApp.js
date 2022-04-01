@@ -65,11 +65,11 @@ export const RegistroApp = () => {
 
 
     function saveRegistro() {
-        console.log(objRegister);
         instance.post('/usuario/create', objRegister)
             .then(resp => {
                 if (resp.data.statusCode === 200) {
                     alert('creado');
+                    window.location.href = "/login";
                 } else {
                     console.log('Hubo un error');
                 }

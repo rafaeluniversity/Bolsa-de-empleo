@@ -12,10 +12,12 @@ import { decodeJWT } from "../utils/Utils";
 
 export function DetalleEmpleo() {
     const { id } = useParams();
-    const [edit, setEdit] = useState(false);
-    const tipoUser = decodeJWT(localStorage.getItem('token')).tipousuario;
-    const empresaID = decodeJWT(localStorage.getItem('token')).empresaId;
+    const tipoUser = typeof localStorage.getItem('token') === 'string' ? decodeJWT(localStorage.getItem('token')).tipousuario : "";
+    const empresaID = typeof localStorage.getItem('token') === 'string' ? decodeJWT(localStorage.getItem('token')).empresaId : "";
     let EditOn = (tipoUser === 'EMP' || tipoUser === 'EMD') ? true : false;
+    const [edit, setEdit] = useState(true);
+
+
 
     let [objPublication, setObjPublication] = useState({
         nombre: '',
@@ -40,8 +42,12 @@ export function DetalleEmpleo() {
     });
 
 
-    useEffect(() => {
 
+
+    useEffect(() => {
+        if (!EditOn) {
+            setEdit(false);
+        }
         if (id > 0) {
             instance.get('/publicaciones/findById/' + id)
                 .then(resp => {
@@ -57,12 +63,11 @@ export function DetalleEmpleo() {
                             ofrecemos,
                             especialidad_id: parseInt(resp.data.data.especialidad_id),
                             subespecialidad_id: parseInt(resp.data.data.subespecialidad_id),
-                            empresa_id: decodeJWT(localStorage.getItem('token')).empresaId,
+                            empresa_id: empresaID,
                         };
                         setObjPublication(data);
-                        if (EditOn && data.empresa_id === empresaID) {
+                        if (typeof id !== "number" || (EditOn && data.empresa_id === empresaID)) {
                             setEdit(true);
-                            console.log(EditOn);
                         }
                     } else {
                         console.log('Hubo un error');
@@ -71,16 +76,20 @@ export function DetalleEmpleo() {
         } else {
 
         }
+    });
 
-    }, []);
+    const listFlag = Object.keys(objPublication.habilidades) < 1 ? <li className='fake-textarea'></li> : "";
 
     const obtenerHabilidades = () => {
         var nodeList = document.getElementById('habilidades').childNodes;
         let obj = {};
         for (let i = 0; i < nodeList.length; i++) {
-            obj[i + 1] = nodeList[i].innerText;
+            if (nodeList[i].innerText === '') {
+            } else {
+                obj[i + 1] = nodeList[i].innerText;
+            }
         }
-        setObjPublication(prev => ({ ...prev, 'habilidades': obj }));
+        objPublication.habilidades = obj;
     };
 
     const requisitosInputChange = event => {
@@ -88,7 +97,10 @@ export function DetalleEmpleo() {
         var nodeList = document.getElementById(id).childNodes;
         let obj = {};
         for (let i = 0; i < nodeList.length; i++) {
-            obj[i + 1] = nodeList[i].innerText;
+            if (nodeList[i].innerText === '') {
+            } else {
+                obj[i + 1] = nodeList[i].innerText;
+            }
         }
         objPublication.requisitos[id] = obj;
     };
@@ -100,8 +112,16 @@ export function DetalleEmpleo() {
 
     const handleInputChange = event => {
         let id = event.target.id;
-        let value = event.target.name === 'nombre' ? event.target.value : document.getElementById(id).innerText;
+        let value = document.getElementById(id).innerText;
+        objPublication[id] = value;
+
+    };
+
+    const InputChange = event => {
+        const id = event.target.id;
+        const value = event.target.value;
         setObjPublication(prev => ({ ...prev, [id]: value }));
+
     };
 
     function savePublicaction() {
@@ -150,7 +170,7 @@ export function DetalleEmpleo() {
                             name="nombre"
                             autoComplete='off'
                             value={objPublication.nombre}
-                            onChange={handleInputChange}
+                            onChange={InputChange}
                             placeholder='Escriba aqui el titulo del empleo (max. 60 caracteres)'
                         />
 
@@ -187,6 +207,7 @@ export function DetalleEmpleo() {
                         onInput={requisitosInputChange}
                         suppressContentEditableWarning={true}
                     >
+                        {listFlag}
                         {Object.values(objPublication.requisitos.TITULACIONES).map((titulacion) => {
                             return (
                                 <li>{titulacion}</li>
@@ -203,6 +224,7 @@ export function DetalleEmpleo() {
                         onInput={requisitosInputChange}
                         suppressContentEditableWarning={true}
                     >
+                        {listFlag}
                         {Object.values(objPublication.requisitos.COMPETENCIAS).map((competencia) => {
                             return (
                                 <li>{competencia}</li>
@@ -218,6 +240,7 @@ export function DetalleEmpleo() {
                         onInput={requisitosInputChange}
                         suppressContentEditableWarning={true}
                     >
+                        {listFlag}
                         {Object.values(objPublication.requisitos.EXPERIENCIA).map((experiencia) => {
                             return (
                                 <li>{experiencia}</li>
@@ -233,6 +256,7 @@ export function DetalleEmpleo() {
                         onInput={requisitosInputChange}
                         suppressContentEditableWarning={true}
                     >
+                        {listFlag}
                         {Object.values(objPublication.requisitos.IDIOMAS).map((idiomas) => {
                             return (
                                 <li>{idiomas}</li>
@@ -245,13 +269,16 @@ export function DetalleEmpleo() {
                         id='habilidades'
                         className='fake-textarea'
                         contentEditable={edit}
-                        suppressContentEditableWarning={true}
                         onInput={obtenerHabilidades}
+                        suppressContentEditableWarning={true}
                     >
+                        {listFlag}
                         {Object.values(objPublication.habilidades).map((habilidad) => {
+
                             return (
                                 <li>{habilidad}</li>
                             );
+
                         })}
                     </ul>
 
