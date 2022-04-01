@@ -19,7 +19,7 @@ export const ListEmpleo = () => {
         palabraclave: ""
     });
 
-    const tipoUser = decodeJWT(localStorage.getItem('token')).tipousuario;
+    const tipoUser = typeof localStorage.getItem('token') === 'string' ? decodeJWT(localStorage.getItem('token')).tipousuario : "";
     const publicationIn = localStorage.getItem('token') && (tipoUser === 'EMP' || tipoUser === 'EMD') ? <LinkPublication href="/publication">Publicar Empleo</LinkPublication> : "";
 
     useEffect(() => {
@@ -30,7 +30,6 @@ export const ListEmpleo = () => {
                 } else {
                     console.log('Hubo un error');
                 }
-                console.log(tipoUser);
             });
     }, []);
 

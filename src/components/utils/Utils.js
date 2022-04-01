@@ -1,21 +1,21 @@
 import Base64 from 'Base64';
 
 const decodeJWT = chainToken => {
-    const base64Url = chainToken.split('.')[1];
-    if (!base64Url) {
-      return '';
-    }
-    const decodedValue = JSON.parse(Base64.atob(base64Url));
-    return decodedValue.data;
+  const base64Url = chainToken.split('.')[1];
+  if (!base64Url) {
+    return '';
   }
-  
-  const decodeJWTFechaexp = chainToken => {
-    const base64Url = chainToken.split('.')[1];
-    if (!base64Url) {
-      return '';
-    }
-    const decodedValue = JSON.parse(Base64.atob(base64Url));
-    return decodedValue;
-  }
+  const decodedValue = JSON.parse(Base64.atob(base64Url));
+  return decodedValue.data;
+};
 
-  export { decodeJWT, decodeJWTFechaexp }
+const decodeJWTFechaexp = chainToken => {
+  const base64Url = chainToken.split('.')[1];
+  if (!base64Url) {
+    return '';
+  }
+  const decodedValue = JSON.parse(Base64.atob(base64Url));
+  return decodedValue;
+};
+
+export { decodeJWT, decodeJWTFechaexp };
