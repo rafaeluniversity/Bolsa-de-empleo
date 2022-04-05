@@ -96,7 +96,7 @@ export const CardDetalleEmpleo = () => {
                         defaultValue={0}
                         id='especialidad'
                         value={especialidad}
-                        name="nombre"
+                        name="especialidad"
                         onChange={selectChangeHandler}
                     >
                         <option value={0} disabled hidden>Especialidad</option>

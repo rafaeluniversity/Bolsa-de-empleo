@@ -37,8 +37,8 @@ export function DetalleEmpleo() {
             REMUNERACION: ''
         },
         ofrecemos: '',
-        especialidad_id: '',
-        subespecialidad_id: '',
+        especialidad_id: 0,
+        subespecialidad_id: 0,
     });
 
 
@@ -147,6 +147,12 @@ export function DetalleEmpleo() {
                     window.location.href = "/";
                 } else {
                     console.log('Hubo un error');
+                }
+            });
+        instance.post('/publicaciones/create', data)
+            .catch(resp => {
+                if (typeof (resp.data) === 'undefined') {
+                    alert('PORFAVOR SELECCIONE UNA ESPECIALIDAD Y SUBESPECIALIDAD');
                 }
             });
     }
