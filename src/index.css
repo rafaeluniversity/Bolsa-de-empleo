@@ -196,7 +196,7 @@ nav ul{
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 20px 45px;
+  padding: 20px 5px;
   border-radius: 15px;
 }
 
@@ -208,9 +208,10 @@ nav ul{
 }
 
 .card-title img{
-  width: 20%;
+  width:100%;
   height: auto;
-  border-radius: 50%;
+  padding: 30px;
+  /*border-radius: 50%;*/
   /* margin-right: 25px; */
   
 }
@@ -374,3 +375,11 @@ body{
   font-size: 3em;
   margin-right: 30px;
 }
+
+
+.hoverText:hover {
+    color: green;
+    background-color: white;
+    border: 2px solid green;
+}
+

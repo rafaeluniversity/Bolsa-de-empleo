@@ -20,7 +20,7 @@ export const ListEmpleo = () => {
     });
 
     const tipoUser = typeof localStorage.getItem('token') === 'string' ? decodeJWT(localStorage.getItem('token')).tipousuario : "";
-    const publicationIn = localStorage.getItem('token') && (tipoUser === 'EMP' || tipoUser === 'EMD') ? <LinkPublication href="/publication">Publicar Empleo</LinkPublication> : "";
+    const publicationIn = localStorage.getItem('token') && (tipoUser === 'EMP' || tipoUser === 'EMD' || tipoUser === 'ADM') ? <LinkPublication href="/publication">Publicar Empleo</LinkPublication> : "";
 
     useEffect(() => {
         instance.get('/publicaciones/list/last')
@@ -516,4 +516,10 @@ color: white;
 cursor: pointer;
 font-size: 1.1rem;
 font-weight: 900;
-text-align: right;`;
+text-align: right;
+&:hover {
+    color: Green;
+    background-color:white;
+    border-radius:5px;
+  }
+  `;

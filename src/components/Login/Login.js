@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled, { ThemeProvider } from "styled-components";
 import background from "../../assets/img/ed-259-Zm-CkDSKC1M-unsplash.jpg";
 import LogoUtm from "../../assets/img/logo.png";
 import { FaUser, FaLock } from 'react-icons/fa';
 import instance from '../utils/Instance';
+import ReCAPTCHA from "react-google-recaptcha";
+import { useDispatch } from 'react-redux';
+import allActions from '../redux/actions';
+import { TriggerNotification } from "../general/notification/TriggerNotification";
+import sweetAlert  from '../general/alerts/sweetAlert';
 
 export const Login = () => {
 
@@ -13,6 +18,7 @@ export const Login = () => {
         correo: "",
         contrasena: ""
     });
+    const [captchaValido, setCaptchaValido] = useState(null);
 
     //temas
     const theme = {
@@ -30,32 +36,68 @@ export const Login = () => {
         setUSer(prev => ({ ...prev, [name]: value }));
     }
 
-    function Login() {
-        setButton(true);
-        instance.post('/usuario/login', objUser)
-            .then(resp => {
-                const data = resp.data.data;
-                if (resp.data.statusCode === 200 && Object.keys(data).length > 0) {
-                    if (data.estado_cuenta) {
-                        localStorage.setItem('token', JSON.stringify(data.token));
-                        console.log(JSON.parse(localStorage.getItem('token')));
-                        alert('Logueado');
-                        window.location.href = "/";
-                    } else {
-                        console.log(data);
-                        console.log('Hubo un error - Cuenta no activada');
-                        setButton(false);
-                    }
-                } else {
-                    console.log('Hubo un error - Contraseña o correo incorrectos');
-                    alert('Hubo un error - Contraseña o correo incorrectos');
-                    setButton(false);
-                }
+    const recaptchaRef = useRef(null);
 
-            });
-        setButton(false);
+    const changeCaptcha = () => {
+        if (recaptchaRef.current.getValue()) {
+            setCaptchaValido(true);
+        } else {
+            setCaptchaValido(false);
+        }
     }
 
+    const dispatch = useDispatch();
+
+    const showLoading = () => {
+        dispatch(allActions.loadingActions.showLoading());
+    }
+
+    const hideLoading = () => {
+        dispatch(allActions.loadingActions.hideLoading());
+    }
+
+    function Login() {
+        showLoading();
+        setButton(true);
+        if (captchaValido) {
+            instance.post('/usuario/login', objUser)
+                .then(resp => {
+                    const data = resp.data.data;
+                    if (resp.data.statusCode === 200 && Object.keys(data).length > 0) {
+                        if (data.estado_cuenta) {
+                            localStorage.setItem('token', JSON.stringify(data.token));
+                            console.log(JSON.parse(localStorage.getItem('token')));
+                            window.location.href = "/";
+                            hideLoading();
+                        } else {
+                            console.log(data);
+                            console.log('Hubo un error - Cuenta no activada');
+                            setButton(false);
+                            hideLoading();
+                        }
+                    } else {
+                        sweetAlert({
+                            icon:'warning',
+                            title:'Datos no encontrados',
+                            message:'El usuario o la contraseña, son incorrectos, por favor verifique'
+                        });
+                        setButton(false);
+                        hideLoading();
+                    }
+
+                });
+        } else {
+            setButton(false);
+            TriggerNotification(
+                4000,
+                'Información!',
+                'Verifique el captcha para poner iniciar sesion!',
+                'warning',
+            );
+            hideLoading();
+        }
+
+    }
 
     return (
         <Container>
@@ -81,14 +123,25 @@ export const Login = () => {
                         value={objUser.contrasena}
                         onChange={handleInputChange} />
 
+                    <div style={{ borderWidth: 2, borderColor: 'red', border: 1 }}>
+                        <ReCAPTCHA
+                            ref={recaptchaRef}
+                            sitekey="6LfuxJYkAAAAAEqVGLL9XWFCimZxHOFdKrGsYpuQ"
+                            onChange={changeCaptcha}
+                        />
+                    </div>
+
                     <ThemeProvider theme={theme}>
                         <Input type="button" value="Iniciar sesión" onClick={Login} disabled={objbutton}></Input>
                     </ThemeProvider>
 
                 </FormLogin>
+
                 <div><p>¿No tienes una cuenta? <Link href="/register">Regístrate gratis</Link></p></div>
                 <Link>¿Olvidaste tu contraseña?</Link>
+
             </DivLogin>
+
         </Container >
     );
 };
@@ -137,11 +190,11 @@ p{
 }
 
 .UserIcon{
-    top: 38.5%;
+    top: 32%;
 }
 
 .LockIcon{
-    top: 55%;
+    top: 44%;
 }
 
 //Responsive 
@@ -158,11 +211,11 @@ justify-content: center;
 }
 
 .UserIcon{
-    top: 37.5%;
+    top: 31%;
 }
 
 .LockIcon{
-    top: 54.5%;
+    top: 44%;
 }
 }
 
@@ -172,11 +225,11 @@ justify-content: center;
 }
 
 .UserIcon{
-    top: 37.5%;
+    top: 30.5%;
 }
 
 .LockIcon{
-    top: 54.5%;
+    top: 43.5%;
 }
 
 }
@@ -187,11 +240,11 @@ justify-content: center;
 }
 
 .UserIcon{
-    top: 42.5%;
+    top: 37%;
 }
 
 .LockIcon{
-    top: 57.5%;
+    top: 47.5%;
 }
 }
 `;

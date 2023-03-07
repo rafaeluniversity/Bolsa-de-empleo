@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import instance from '../utils/Instance';
 import { useParams } from 'react-router-dom';
+import Input from '@mui/joy/Input';
+import logoUtm from "../../assets/img/logo.png";
 
 export const CardDetalleEmpleo = () => {
     const { id } = useParams();
@@ -12,7 +14,7 @@ export const CardDetalleEmpleo = () => {
     const [Select, setSelect] = useState('');
     const [subEspecialidad, setSubEspecialidad] = useState(0);
     const [especialidad, setEspecialidad] = useState(0);
-
+    const [numeroVacantes, setNumeroVacantes] = useState(0);
 
     useEffect(() => {
         instance.get('/especialidades')
@@ -84,14 +86,13 @@ export const CardDetalleEmpleo = () => {
 
         <Container className='card'>
             <CardTitle className='card-title'>
-                <Img src='https://pbs.twimg.com/profile_images/1002122442637238273/zRcDtN3r_400x400.jpg' />
-                <h3>Analista financiero</h3>
+                <Img src={logoUtm} />
             </CardTitle>
             <hr />
             <Info>
-                <Span>Trabajo</Span>
+                {/*<Span>Trabajo</Span>*/}
                 <div>
-                    <Label> Especialidad: </Label>
+                    <Label> Especialidad </Label>
                     <ComboBox
                         defaultValue={0}
                         id='especialidad'
@@ -108,7 +109,7 @@ export const CardDetalleEmpleo = () => {
                     </ComboBox>
                 </div>
                 <div>
-                    <Label> Subespecialidad: </Label>
+                    <Label> Subespecialidad </Label>
                     <ComboBox
                         defaultValue={0}
                         id='subespecialidad'
@@ -123,7 +124,10 @@ export const CardDetalleEmpleo = () => {
                         })}
                     </ComboBox>
                 </div>
-                <Label> Vacantes: </Label>
+                <div>
+                    <Label> Vacantes: </Label>
+                    <Input id='n_vacantes' onChange={(e) => setNumeroVacantes(e.target.value)} value={numeroVacantes} placeholder="Escriba el numero de vancantes" type="number" />
+                </div>
             </Info>
         </Container>
     );
@@ -149,7 +153,7 @@ const Img = styled.img``;
 
 const Span = styled.span`
 background-color: #147935;
-padding: 0.5em 2em;
+padding: 0.5em 1em;
 border: 1px solid gray;
 border-right: 1em solid yellow;
 color: white;

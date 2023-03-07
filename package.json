@@ -3,21 +3,33 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@mui/joy": "^5.0.0-alpha.68",
+    "@mui/material": "^5.11.10",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
     "Base64": "^1.1.0",
+    "add": "^2.0.6",
     "axios": "^0.25.0",
-    "Base64": "^1.1.0",
     "base64-js": "^1.5.1",
+    "feather-icons": "^4.29.0",
     "jquery": "^3.6.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-google-recaptcha": "^2.1.0",
     "react-icons": "^4.3.1",
+    "react-redux": "^8.0.5",
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
+    "redux": "^4.2.1",
+    "redux-persist": "^6.0.0",
+    "sass": "^1.58.3",
     "styled-components": "^5.3.3",
-    "web-vitals": "^2.1.3"
+    "sweetalert2": "^11.7.2",
+    "web-vitals": "^2.1.3",
+    "yarn": "^1.22.19"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -32,6 +44,8 @@
       "react-app/jest"
     ]
   },
+  "proxy": "http://192.168.1.8/",
+  "homepage": "http://192.168.1.8/",
   "browserslist": {
     "production": [
       ">0.2%",

@@ -8,7 +8,10 @@ import background from "../../assets/img/ed-259-Zm-CkDSKC1M-unsplash.jpg";
 import background2 from "../../assets/img/descarga.jpg";
 import TopNavbar from "../TopNavbar";
 import { decodeJWT } from "../utils/Utils";
-
+import Button from '@mui/joy/Button';
+import sweetAlert from '../general/alerts/sweetAlert';
+import { useDispatch } from 'react-redux';
+import allActions from '../redux/actions';
 
 export function DetalleEmpleo() {
     const { id } = useParams();
@@ -78,6 +81,17 @@ export function DetalleEmpleo() {
         }
     });
 
+
+    const dispatch = useDispatch();
+
+    const showLoading = () => {
+        dispatch(allActions.loadingActions.showLoading());
+    }
+
+    const hideLoading = () => {
+        dispatch(allActions.loadingActions.hideLoading());
+    }
+
     const listFlag = Object.keys(objPublication.habilidades) < 1 ? <li className='fake-textarea'></li> : "";
 
     const obtenerHabilidades = () => {
@@ -125,36 +139,76 @@ export function DetalleEmpleo() {
     };
 
     function savePublicaction() {
+        showLoading();
         obtenerHabilidades();
+        const dataUser = typeof localStorage.getItem('token') === 'string' ? decodeJWT(localStorage.getItem('token')) : "";
         const { nombre, descripcion, informacion_adicional, requisitos, habilidades, condicion_laboral, ofrecemos } = objPublication;
-        const data = {
-            nombre,
-            descripcion,
-            informacion_adicional,
-            requisitos: JSON.stringify(requisitos),
-            habilidades: JSON.stringify(habilidades),
-            condicion_laboral: JSON.stringify(condicion_laboral),
-            ofrecemos,
-            especialidad_id: parseInt(document.getElementById('especialidad').value),
-            subespecialidad_id: parseInt(document.getElementById('subespecialidad').value),
-            empresa_id: 1
-        };
-        console.log(data);
-        instance.post('/publicaciones/create', data)
-            .then(resp => {
-                if (resp.data.statusCode === 200) {
-                    alert('creado');
-                    window.location.href = "/";
+
+        const especialidad_id = document.getElementById('especialidad').value;
+        const subespecialidad_id = document.getElementById('subespecialidad').value;
+
+        if (nombre !== '') {
+            if (descripcion.length > 10) {
+                if (especialidad_id > 0 && subespecialidad_id > 0) {
+                    const data = {
+                        nombre,
+                        descripcion,
+                        informacion_adicional,
+                        requisitos: JSON.stringify(requisitos),
+                        habilidades: JSON.stringify(habilidades),
+                        condicion_laboral: JSON.stringify(condicion_laboral),
+                        ofrecemos,
+                        especialidad_id: parseInt(especialidad_id),
+                        subespecialidad_id: parseInt(subespecialidad_id),
+                        empresa_id: dataUser.empresaId,
+                        vacantes: parseInt(document.getElementById('n_vacantes').value),
+                    };
+                    console.log('data');
+                    console.log(data);
+                    instance.post('/publicaciones/create', data)
+                        .then(resp => {
+                            if (resp.data.statusCode === 200) {
+                                sweetAlert({
+                                    icon: 'success',
+                                    title: 'Empleo Creado',
+                                    message: 'El empleo se ha creado correctamente'
+                                });
+                                hideLoading();
+                                window.location.href = "/";
+                            } else {
+                                console.log('Hubo un error');
+                            }
+                        });
+                    instance.post('/publicaciones/create', data)
+                        .catch(resp => {
+                            if (typeof (resp.data) === 'undefined') {
+                                alert('PORFAVOR SELECCIONE UNA ESPECIALIDAD Y SUBESPECIALIDAD');
+                            }
+                        });
                 } else {
-                    console.log('Hubo un error');
+                    sweetAlert({
+                        icon: 'warning',
+                        title: 'Especialidad|Subespecialidad incompleto',
+                        message: 'Por favor seleccione una especialidad y una subespecialidad para la publicacion del empleo'
+                    });
+                    hideLoading();
                 }
+            } else {
+                sweetAlert({
+                    icon: 'warning',
+                    title: 'Descripcion Incompleta',
+                    message: 'Por favor ingrese una descripcion breve sobre el empleo'
+                });
+                hideLoading();
+            }
+        } else {
+            sweetAlert({
+                icon: 'warning',
+                title: 'Nombre del Empleo Incompleto',
+                message: 'Por favor ingrese un titulo para la publicacion del empleo'
             });
-        instance.post('/publicaciones/create', data)
-            .catch(resp => {
-                if (typeof (resp.data) === 'undefined') {
-                    alert('PORFAVOR SELECCIONE UNA ESPECIALIDAD Y SUBESPECIALIDAD');
-                }
-            });
+            hideLoading();
+        }
     }
 
     return (
@@ -340,14 +394,15 @@ export function DetalleEmpleo() {
                     >
                         {objPublication.ofrecemos}
                     </p>
-
-                    <button
-                        type='button'
-                        className="segmetation"
-                        onClick={savePublicaction}
+                    <Button
+                        color="success"
+                        onClick={() => savePublicaction()}
+                        size="lg"
+                        variant="solid"
+                        style={{ backgroundColor: 'green', color: '#FFFFFF' }}
                     >
-                        Crear registro
-                    </button>
+                        CREAR EMPLEO
+                    </Button>
                 </ContainerPublication>
                 <ContainerCard>
                     <CardDetalleEmpleo />
