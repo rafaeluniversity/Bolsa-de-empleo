@@ -5,7 +5,7 @@ import TopNavbar from "../TopNavbar";
 import instance from '../utils/Instance';
 import { FaArrowRight, FaRegClock } from 'react-icons/fa';
 import img from "../../assets/img/ed-259-Zm-CkDSKC1M-unsplash.jpg";
-
+import maletin from "../../assets/img/maletin.png";
 
 export const AdvancedFilter = () => {
 
@@ -77,7 +77,6 @@ export const AdvancedFilter = () => {
         if (filtro.palabraclave === "") {
             aux = "*";
         } else { aux = filtro.palabraclave; };
-        console.log(filtro);
         instance.get('/publicaciones/filter/' + filtro.especialidad_id + '/' + filtro.subespecialidad_id + '/' + filtro.ubicacionId + '/' + aux)
             .then(resp => {
                 if (resp.data.statusCode === 200) {
@@ -224,15 +223,20 @@ export const AdvancedFilter = () => {
                     {Object.values(listaPublicaciones).map((publicacion) => {
                         return (
                             <Employed key={publicacion.id + publicacion.titulo} onClick={() => window.location.href = '/publication/' + publicacion.publicacionid}>
-                                <Img src={img}></Img>
+                                <Img src={maletin}></Img>
                                 <Info>
                                     <InfoEmployed>
-                                        <TitleEmployed>{publicacion.titulo}</TitleEmployed>
-                                        <Label>Trabajo</Label>
+                                        <TitleEmployed>{publicacion.titulo.toUpperCase()}</TitleEmployed>
+                                        <Label>Vacantes: {publicacion.vacantes && parseInt(publicacion.vacantes) > 0 ? publicacion.vacantes : "No especificado"}</Label>
                                     </InfoEmployed>
                                     <InfoStatus>
                                         <State>{publicacion.nombreempresa}</State>
-                                        <State>Portoviejo</State>
+                                        {(publicacion.correo_empresa !== null || publicacion.telefono_empresa !== null) &&
+                                            <State>Contactos: {publicacion.correo_empresa} - {publicacion.telefono_empresa}</State>
+                                        }
+                                        {(publicacion.correo_empresa === null && publicacion.telefono_empresa === null) &&
+                                            <State>{publicacion.ciudadempresa}</State>
+                                        }
                                         <State className="latest"><FaRegClock className="clock" /> {calcFecha(publicacion.fecha)}</State>
                                         <ViewEmployed > <FaArrowRight className="icon" /></ViewEmployed>
                                     </InfoStatus>
@@ -248,23 +252,14 @@ export const AdvancedFilter = () => {
                 </List>
                 <Published>
                     <Subtitle>Sobre Nosotros</Subtitle>
-                    <P>"Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                        nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-                        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                        Excepteur sint occaecat cupidatat non proident, sunt
-                        in culpa qui officia deserunt mollit anim id est laborum."</P>
-                    <P>"Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                        nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-                        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                        Excepteur sint occaecat cupidatat non proident, sunt
-                        in culpa qui officia deserunt mollit anim id est laborum."</P>
+                    <P>Bienvenido/a a nuestra plataforma de empleos para estudiantes universitarios. </P>
+                    <P> En nuestro sitio web, buscamos facilitar la búsqueda de trabajo para aquellos que están estudiando en la Universidad Tecnica de Manabi. </P>
+                    <P> Ofrecemos una amplia gama de publicaciones de empleos disponibles para que los estudiantes puedan explorar y aplicar en consecuencia.  </P>
+                    <P>  Nuestro objetivo es brindar a los estudiantes las herramientas necesarias para tener éxito en la búsqueda de trabajo y lograr su objetivo de carrera.  </P>
+                    <P>"¡Explora nuestras publicaciones de empleos y comienza a construir tu futuro profesional hoy mismo!</P>
 
                     <ImgPublished src={img} />
-                    <ImgPublished src={img} />
+                    {/*<ImgPublished src={img} />*/}
                 </Published>
             </ListContain>
         </>
@@ -424,9 +419,10 @@ transition: 300ms;
 `;
 
 const Img = styled.img`
-height:100%;
-border-radius: 2em;
-border: 1px solid black;
+width: 50px;
+border-radius: 0%;
+border: 0px solid black;
+padding-top:15px
 `;
 
 const Info = styled.div`

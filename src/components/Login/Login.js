@@ -66,12 +66,14 @@ export const Login = () => {
                     if (resp.data.statusCode === 200 && Object.keys(data).length > 0) {
                         if (data.estado_cuenta) {
                             localStorage.setItem('token', JSON.stringify(data.token));
-                            console.log(JSON.parse(localStorage.getItem('token')));
                             window.location.href = "/";
                             hideLoading();
                         } else {
-                            console.log(data);
-                            console.log('Hubo un error - Cuenta no activada');
+                            sweetAlert({
+                                icon:'warning',
+                                title:'Informacion',
+                                message:'Cuenta no activada'
+                            });
                             setButton(false);
                             hideLoading();
                         }

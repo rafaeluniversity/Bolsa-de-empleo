@@ -163,8 +163,6 @@ export function DetalleEmpleo() {
                         empresa_id: dataUser.empresaId,
                         vacantes: parseInt(document.getElementById('n_vacantes').value),
                     };
-                    console.log('data');
-                    console.log(data);
                     instance.post('/publicaciones/create', data)
                         .then(resp => {
                             if (resp.data.statusCode === 200) {
@@ -176,13 +174,12 @@ export function DetalleEmpleo() {
                                 hideLoading();
                                 window.location.href = "/";
                             } else {
-                                console.log('Hubo un error');
-                            }
-                        });
-                    instance.post('/publicaciones/create', data)
-                        .catch(resp => {
-                            if (typeof (resp.data) === 'undefined') {
-                                alert('PORFAVOR SELECCIONE UNA ESPECIALIDAD Y SUBESPECIALIDAD');
+                                sweetAlert({
+                                    icon: 'warning',
+                                    title: 'Informacion',
+                                    message: 'Hubo un problema al crear la publicacion, por favor intente nuevamente.'
+                                });
+                                hideLoading();
                             }
                         });
                 } else {
