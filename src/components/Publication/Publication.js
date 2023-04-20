@@ -20,8 +20,6 @@ export function DetalleEmpleo() {
     let EditOn = (tipoUser === 'EMP' || tipoUser === 'EMD') ? true : false;
     const [edit, setEdit] = useState(true);
 
-
-
     let [objPublication, setObjPublication] = useState({
         nombre: '',
         descripcion: '',
@@ -46,6 +44,11 @@ export function DetalleEmpleo() {
 
 
 
+    useEffect(() => {
+        if ((tipoUser === '' || tipoUser === 'GRA') && (empresaID === '' || empresaID === 0)) {
+            window.location.href = "/";
+        }
+    }, []);
 
     useEffect(() => {
         if (!EditOn) {

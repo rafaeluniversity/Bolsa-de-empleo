@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch } from 'react-redux';
+import allActions from './redux/actions';
 import styled from "styled-components";
 import img from "../assets/img/ed-259-Zm-CkDSKC1M-unsplash.jpg";
-import { FaArrowRight, FaRegClock } from 'react-icons/fa';
+import { FaEye, FaRegClock } from 'react-icons/fa';
 import TopNavbar from './TopNavbar';
 import instance from './utils/Instance';
 import { FaSearch, FaMapMarkerAlt } from 'react-icons/fa';
@@ -9,6 +11,13 @@ import fondo from "../assets/img/ed-259-Zm-CkDSKC1M-unsplash.jpg";
 import { decodeJWT } from "./utils/Utils";
 import maletin from "../assets/img/maletin.png";
 import sweetAlert from './general/alerts/sweetAlert';
+
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
 
 export const ListEmpleo = () => {
     const [listaPublicaciones, setlistaPublicaciones] = useState({});
@@ -18,6 +27,9 @@ export const ListEmpleo = () => {
         ubicacionId: "",
         palabraclave: ""
     });
+    const [modalViewEmpleo, setModalViewEmpleo] = useState(false);
+    const [objPublication, setObjPublication] = useState({});
+
 
     const tipoUser = typeof localStorage.getItem('token') === 'string' ? decodeJWT(localStorage.getItem('token')).tipousuario : "";
     const publicationIn = localStorage.getItem('token') && (tipoUser === 'EMP' || tipoUser === 'EMD' || tipoUser === 'ADM') ? <LinkPublication href="/publication">Publicar Empleo</LinkPublication> : "";
@@ -29,13 +41,33 @@ export const ListEmpleo = () => {
                     setlistaPublicaciones(resp.data.data);
                 } else {
                     sweetAlert({
-                        icon:'warning',
-                        title:'Informacion',
-                        message:'Ha ocurrido un problema al listar los ultimos empleos'
+                        icon: 'warning',
+                        title: 'Informacion',
+                        message: 'Ha ocurrido un problema al listar los ultimos empleos'
                     });
                 }
             });
     }, []);
+
+    const dispatch = useDispatch();
+
+    const showLoading = () => {
+        dispatch(allActions.loadingActions.showLoading());
+    }
+
+    const hideLoading = () => {
+        dispatch(allActions.loadingActions.hideLoading());
+    }
+
+    const openModalViewEmpleo = async (publicacion_id) => {
+        await getDataEmpleo(publicacion_id);
+        setModalViewEmpleo(true);
+    };
+
+    const closeModalViewEmpleo = () => {
+        setModalViewEmpleo(false);
+    };
+
 
     const createChangeHandler = e => {
         const { name } = e.target;
@@ -44,6 +76,22 @@ export const ListEmpleo = () => {
 
     };
 
+    const getDataEmpleo = (publicacion_id) => {
+        showLoading();
+        instance.get(`/publicaciones/findById/${publicacion_id}`)
+            .then(resp => {
+                if (resp.data.statusCode === 200) {
+                    const { nombre, descripcion, informacion_adicional, requisitos, habilidades, condicion_laboral, ofrecemos } = resp.data.data;
+                    console.log(resp.data.data);
+
+                    setObjPublication(resp.data.data);
+                    hideLoading();
+                } else {
+                    hideLoading();
+                }
+            });
+
+    }
     const send = () => {
         let aux;
         if (filtro.palabraclave === "") {
@@ -128,6 +176,21 @@ export const ListEmpleo = () => {
 
     return (
         <div>
+            <Dialog open={modalViewEmpleo} onClose={closeModalViewEmpleo} aria-labelledby="form-dialog-title" style={{ zIndex: 20 }}>
+                <DialogTitle id="form-dialog-title">Informacion del empleo</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Informacion
+                    </DialogContentText>
+
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={closeModalViewEmpleo} color="error">
+                        Cerrar
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
             <TopNavbar></TopNavbar>
 
             <Banner>
@@ -172,7 +235,7 @@ export const ListEmpleo = () => {
                     <List>
                         {Object.values(listaPublicaciones).map((publicacion) => {
                             return (
-                                <Employed key={publicacion.publicacionid + publicacion.titulo} onClick={() => window.location.href = '/publication/' + publicacion.publicacionid}>
+                                <Employed key={publicacion.publicacionid + publicacion.titulo} onClick={()=>openModalViewEmpleo(publicacion.publicacionid)}>
                                     <Img src={maletin}></Img>
                                     <Info>
                                         <InfoEmployed>
@@ -188,7 +251,7 @@ export const ListEmpleo = () => {
                                                 <State>{publicacion.ciudadempresa}</State>
                                             }
                                             <State className="latest"><FaRegClock className="clock" /> {calcFecha(publicacion.fecha)}</State>
-                                            <ViewEmployed > <FaArrowRight className="icon" /></ViewEmployed>
+                                            {/*<ViewEmployed > <FaEye className="icon" /></ViewEmployed>*/}
                                         </InfoStatus>
                                     </Info>
                                 </Employed>

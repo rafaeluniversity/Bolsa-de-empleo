@@ -8,18 +8,31 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { useDispatch } from 'react-redux';
 import allActions from '../redux/actions';
 import { TriggerNotification } from "../general/notification/TriggerNotification";
-import sweetAlert  from '../general/alerts/sweetAlert';
+import sweetAlert from '../general/alerts/sweetAlert';
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+
+
+import IconButton from '@mui/material/IconButton';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import InputAdornment from '@mui/material/InputAdornment';
+import FormControl from '@mui/material/FormControl';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 export const Login = () => {
 
-    //logica
     const [objbutton, setButton] = useState(false);
-    const [objUser, setUSer] = useState({
-        correo: "",
-        contrasena: ""
-    });
-    const [captchaValido, setCaptchaValido] = useState(null);
-
     //temas
     const theme = {
         cursor: objbutton ? "" : "pointer",
@@ -27,6 +40,25 @@ export const Login = () => {
         color: objbutton ? "#147935" : "white",
         border: objbutton ? "2px solid green" : "none"
     };
+
+
+
+    const [objUser, setUSer] = useState({
+        correo: "",
+        contrasena: ""
+    });
+    const [captchaValido, setCaptchaValido] = useState(null);
+    const [modalResetPassword, setModalResetPassword] = useState(false);
+    const [correoCambioClave, setCorreoCambioClave] = useState('');
+
+    const [activeFormChangePassword, setActiveFormChangePassword] = useState(false);
+    const [confirmationCode, setConfirmationCode] = useState('');
+    const [formPassword, setFormPassword] = useState('');
+    const [formConfirmPassword, setFormConfirmPassword] = useState('');
+    const [userId, setUserId] = useState(0);
+    const [showPassword, setShowPasswword] = useState(false);
+
+
 
     function handleInputChange(event) {
         const target = event.target;
@@ -56,6 +88,23 @@ export const Login = () => {
         dispatch(allActions.loadingActions.hideLoading());
     }
 
+    const openModalResetPassword = () => {
+        setModalResetPassword(true);
+    };
+
+    const closeModalResetPassword = () => {
+        setModalResetPassword(false);
+        setCorreoCambioClave('');
+        setActiveFormChangePassword(false);
+        setConfirmationCode('');
+        setCorreoCambioClave('');
+        setFormConfirmPassword('');
+    };
+
+    const changeViewPassWord = () => {
+        setShowPasswword(!showPassword)
+    }
+
     function Login() {
         showLoading();
         setButton(true);
@@ -70,18 +119,18 @@ export const Login = () => {
                             hideLoading();
                         } else {
                             sweetAlert({
-                                icon:'warning',
-                                title:'Informacion',
-                                message:'Cuenta no activada'
+                                icon: 'warning',
+                                title: 'Informacion',
+                                message: 'Cuenta no activada'
                             });
                             setButton(false);
                             hideLoading();
                         }
                     } else {
                         sweetAlert({
-                            icon:'warning',
-                            title:'Datos no encontrados',
-                            message:'El usuario o la contraseña, son incorrectos, por favor verifique'
+                            icon: 'warning',
+                            title: 'Datos no encontrados',
+                            message: 'El usuario o la contraseña, son incorrectos, por favor verifique'
                         });
                         setButton(false);
                         hideLoading();
@@ -101,50 +150,246 @@ export const Login = () => {
 
     }
 
+    const sendEmailChangePassword = () => {
+        showLoading();
+        if (correoCambioClave !== '' && correoCambioClave.length > 5) {
+            const data = {
+                'correo': correoCambioClave.trim(),
+            }
+            const REQUEST_LINK = `usuario/request/change/password`;
+            return instance.post(REQUEST_LINK, data)
+                .then((res) => {
+                    if (res.data.statusCode === 200) {
+                        if (!res.data.data) {
+                            hideLoading();
+                            sweetAlert({
+                                icon: 'warning',
+                                title: 'Correo no encontrado',
+                                message: 'No se ha encontrado una cuenta con este correo, intente nuevamente !',
+                            });
+                        } else {
+                            sweetAlert({
+                                icon: 'success',
+                                title: 'Confirmacion',
+                                message: 'Se ha enviado un correo con el código para poder cambiar su contraseña, por favor revise su bandeja de email.'
+                            });
+                            setActiveFormChangePassword(true);
+                            setUserId(res.data.data);
+                            hideLoading();
+                        }
+                    } else {
+                        hideLoading();
+                        sweetAlert({
+                            icon: 'warning',
+                            title: 'Alerta',
+                            message: 'Hubo un problema al enviar el correo, por favor intente nuevamente !'
+                        });
+                    }
+                })
+                .catch((error) => {
+                    hideLoading();
+                });
+        } else {
+            hideLoading();
+            sweetAlert({
+                icon: 'warning',
+                title: 'Correo invalido',
+                message: 'Debe ingresar un correo valido, por favor verifique'
+            });
+        }
+
+    }
+
+    const changePassword = () => {
+        showLoading();
+        if (confirmationCode.length > 5) {
+            if (formPassword === formConfirmPassword) {
+                const data = {
+                    'codigo': confirmationCode.toUpperCase(),
+                    'contrasena': formPassword.trim(),
+                    'userId': userId
+                }
+                const CHANGE_PASSWORD = `usuario/change/password`;
+                return instance.post(CHANGE_PASSWORD, data)
+                    .then((res) => {
+                        if (res.data.statusCode === 200) {
+                            sweetAlert({
+                                icon: 'warning',
+                                title: 'Información',
+                                message: `Estimado usuario: ${res.data.data}`
+                            });
+                            setActiveFormChangePassword(false);
+                            setUserId(0);
+                            setConfirmationCode('');
+                            setFormPassword('');
+                            setFormConfirmPassword('');
+                            setCorreoCambioClave('');
+                            closeModalResetPassword();
+                            hideLoading();
+                        } else {
+                            hideLoading();
+                            sweetAlert({
+                                icon: 'warning',
+                                title: 'Alerta',
+                                message: 'Hubo un problema al procesar la solicitud, por favor intente nuevamente'
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        hideLoading();
+                    });
+            } else {
+                hideLoading();
+                sweetAlert({
+                    icon: 'warning',
+                    title: 'Información',
+                    message: 'Las contraseñas ingresadas no coinciden,por favor verifique !'
+                });
+            }
+        } else {
+            hideLoading();
+            sweetAlert({
+                icon: 'warning',
+                title: 'Información',
+                message: 'Ingrese un código válido,intente nuevamente !'
+            });
+        }
+    }
+
     return (
-        <Container>
-            <DivLogin>
-                <LinkHome href="/"><Logo src={LogoUtm} /></LinkHome>
-                <FormLogin>
-                    <div><Label>Inicia Sesión</Label>
-                        <Label>Postulante</Label></div>
-                    <FaUser className="UserIcon" />
-                    <FaLock className="LockIcon" />
+        <>
+            <Container>
+                <Dialog open={modalResetPassword} onClose={closeModalResetPassword} aria-labelledby="form-dialog-title" style={{ zIndex: 20 }}>
+                    <DialogTitle id="form-dialog-title">Cambio de Contraseña</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {activeFormChangePassword ? 'Por favor digite el codigo enviado a su correo y a continuacion su nueva contraseña' : 'Por favor escriba el email con el que realizo el registro'}
+                        </DialogContentText>
+                        {!activeFormChangePassword &&
+                            <TextField
+                                color="success"
+                                autoFocus
+                                margin="dense"
+                                id="correocambioclave"
+                                label="Correo Electronico"
+                                type="email"
+                                fullWidth
+                                value={correoCambioClave}
+                                onChange={(e) => { setCorreoCambioClave(e.target.value) }}
+                            />
+                        }
+                        {activeFormChangePassword &&
+                            <>
+                                <TextField
+                                    color="success"
+                                    autoFocus
+                                    margin="dense"
+                                    id="confirmationCode"
+                                    label="Codigo de Confirmacion"
+                                    type="text"
+                                    fullWidth
+                                    value={confirmationCode}
+                                    onChange={(e) => { setConfirmationCode(e.target.value) }}
+                                />
+                                <FormControl fullWidth margin="dense" variant="outlined">
+                                    <InputLabel htmlFor="outlined-adornment-password">Nueva Contraseña</InputLabel>
+                                    <OutlinedInput
+                                        id="formPassword"
+                                        type={showPassword ? 'text' : 'password'}
+                                        value={formPassword}
+                                        onChange={(e) => { setFormPassword(e.target.value) }}
+                                        endAdornment={
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={changeViewPassWord}
+                                                    //onMouseDown={changeViewPassWord}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        }
+                                        label="Password"
+                                    />
+                                </FormControl>
+                                <FormControl fullWidth margin="dense" variant="outlined">
+                                    <InputLabel htmlFor="outlined-adornment-password">Repita Contraseña</InputLabel>
+                                    <OutlinedInput
+                                        id="formConfirmPassword"
+                                        type={showPassword ? 'text' : 'password'}
+                                        value={formConfirmPassword}
+                                        onChange={(e) => { setFormConfirmPassword(e.target.value) }}
+                                        endAdornment={
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={changeViewPassWord}
+                                                    //onMouseDown={changeViewPassWord}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        }
+                                        label="Password"
+                                    />
+                                </FormControl>
 
-                    <Input
-                        name="correo"
-                        type="email"
-                        placeholder="Correo electrónico"
-                        value={objUser.correo}
-                        onChange={handleInputChange} />
+                            </>
 
-                    <Input
-                        name="contrasena"
-                        type="password"
-                        placeholder="Contraseña"
-                        value={objUser.contrasena}
-                        onChange={handleInputChange} />
+                        }
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={closeModalResetPassword} color="error">
+                            Cancelar
+                        </Button>
+                        <Button onClick={activeFormChangePassword ? changePassword : sendEmailChangePassword} color="success">{activeFormChangePassword ? 'Actualizar Contrasena' : 'Enviar Correo'}</Button>
+                    </DialogActions>
+                </Dialog>
+                <DivLogin>
+                    <LinkHome href="/"><Logo src={LogoUtm} /></LinkHome>
+                    <FormLogin>
+                        <div><Label>Inicia Sesión</Label>
+                            <Label>Postulante</Label></div>
+                        <FaUser className="UserIcon" />
+                        <FaLock className="LockIcon" />
 
-                    <div style={{ borderWidth: 2, borderColor: 'red', border: 1 }}>
-                        <ReCAPTCHA
-                            ref={recaptchaRef}
-                            sitekey="6LfuxJYkAAAAAEqVGLL9XWFCimZxHOFdKrGsYpuQ"
-                            onChange={changeCaptcha}
-                        />
-                    </div>
+                        <Input
+                            name="correo"
+                            type="email"
+                            placeholder="Correo electrónico"
+                            value={objUser.correo}
+                            onChange={handleInputChange} />
 
-                    <ThemeProvider theme={theme}>
-                        <Input type="button" value="Iniciar sesión" onClick={Login} disabled={objbutton}></Input>
-                    </ThemeProvider>
+                        <Input
+                            name="contrasena"
+                            type="password"
+                            placeholder="Contraseña"
+                            value={objUser.contrasena}
+                            onChange={handleInputChange} />
 
-                </FormLogin>
+                        <div style={{ borderWidth: 2, borderColor: 'red', border: 1 }}>
+                            <ReCAPTCHA
+                                ref={recaptchaRef}
+                                sitekey="6LfuxJYkAAAAAEqVGLL9XWFCimZxHOFdKrGsYpuQ"
+                                onChange={changeCaptcha}
+                            />
+                        </div>
 
-                <div><p>¿No tienes una cuenta? <Link href="/register">Regístrate gratis</Link></p></div>
-                <Link>¿Olvidaste tu contraseña?</Link>
+                        <ThemeProvider theme={theme}>
+                            <Input type="button" value="Iniciar sesión" onClick={Login} disabled={objbutton}></Input>
+                        </ThemeProvider>
 
-            </DivLogin>
+                    </FormLogin>
 
-        </Container >
+                    <div><p>¿No tienes una cuenta? <Link href="/register">Regístrate gratis</Link></p></div>
+                    <Link onClick={() => openModalResetPassword()}>¿Olvidaste tu contraseña?</Link>
+
+                </DivLogin>
+
+            </Container >
+        </>
     );
 };
 

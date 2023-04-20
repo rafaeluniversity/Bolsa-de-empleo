@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import instance from '../utils/Instance';
 import styled from "styled-components";
 import background from "../../assets/img/ed-259-Zm-CkDSKC1M-unsplash.jpg";
+import sweetAlert from '../general/alerts/sweetAlert';
 
 const LogoUtm = "https://www.utm.edu.ec/images/pagina_nueva/logo.png";
 
@@ -68,10 +69,18 @@ export const RegistroApp = () => {
         instance.post('/usuario/create', objRegister)
             .then(resp => {
                 if (resp.data.statusCode === 200) {
-                    alert('creado');
+                    sweetAlert({
+                        icon: 'success',
+                        title: 'Registro Completado',
+                        message: 'se ha registrado satisfactoriamente'
+                    });
                     window.location.href = "/login";
                 } else {
-                    console.log('Hubo un error');
+                    sweetAlert({
+                        icon: 'warning',
+                        title: 'Error al registrar',
+                        message: 'Ha ocurrido un error al registrarse, por favor intente nuevamente'
+                    });
                 }
             });
     }

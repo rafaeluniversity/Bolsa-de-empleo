@@ -87,3 +87,9 @@
 		@include transform(rotate(520deg));
 	}
 }
+
+
+
+.my-swal-popup {
+	z-index: 10000;
+  }
