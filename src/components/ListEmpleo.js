@@ -92,6 +92,7 @@ export const ListEmpleo = () => {
             });
 
     }
+    
     const send = () => {
         let aux;
         if (filtro.palabraclave === "") {

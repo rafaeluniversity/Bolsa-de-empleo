@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useDispatch } from 'react-redux';
+import allActions from '../redux/actions';
 import background from "../../assets/img/ed-259-Zm-CkDSKC1M-unsplash.jpg";
 import TopNavbar from "../TopNavbar";
 import instance from '../utils/Instance';
 import { FaArrowRight, FaRegClock } from 'react-icons/fa';
 import img from "../../assets/img/ed-259-Zm-CkDSKC1M-unsplash.jpg";
 import maletin from "../../assets/img/maletin.png";
+
+import sweetAlert from '../general/alerts/sweetAlert';
+
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import MaterialButton from '@mui/material/Button';
 
 export const AdvancedFilter = () => {
 
@@ -19,6 +30,8 @@ export const AdvancedFilter = () => {
         ubicacionId: 0,
         palabraclave: ""
     });
+    const [modalViewEmpleo, setModalViewEmpleo] = useState(false);
+    const [objPublication, setObjPublication] = useState({});
 
     useEffect(() => {
         instance.get('/publicaciones/filter/0/0/0/*')
@@ -49,6 +62,42 @@ export const AdvancedFilter = () => {
             });
     }, []);
 
+    const dispatch = useDispatch();
+
+    const showLoading = () => {
+        dispatch(allActions.loadingActions.showLoading());
+    }
+
+    const hideLoading = () => {
+        dispatch(allActions.loadingActions.hideLoading());
+    }
+
+    const openModalViewEmpleo = async (publicacion_id) => {
+        await getDataEmpleo(publicacion_id);
+        setModalViewEmpleo(true);
+    };
+
+    const closeModalViewEmpleo = () => {
+        setModalViewEmpleo(false);
+        setObjPublication({});
+    };
+
+    const getDataEmpleo = (publicacion_id) => {
+        showLoading();
+        instance.get(`/publicaciones/findById/${publicacion_id}`)
+            .then(resp => {
+                if (resp.data.statusCode === 200) {
+                    const { nombre, descripcion, informacion_adicional, requisitos, habilidades, condicion_laboral, ofrecemos } = resp.data.data;
+                    console.log(resp.data.data);
+                    setObjPublication(resp.data.data);
+                    hideLoading();
+                } else {
+                    hideLoading();
+                }
+            });
+
+    }
+
     const selectChangeHandler = e => {
         const value = e.target.value;
         setFiltro(prev => ({ ...prev, subespecialidad_id: 0 }));
@@ -73,6 +122,7 @@ export const AdvancedFilter = () => {
     };
 
     const send = () => {
+        showLoading();
         let aux;
         if (filtro.palabraclave === "") {
             aux = "*";
@@ -80,8 +130,10 @@ export const AdvancedFilter = () => {
         instance.get('/publicaciones/filter/' + filtro.especialidad_id + '/' + filtro.subespecialidad_id + '/' + filtro.ubicacionId + '/' + aux)
             .then(resp => {
                 if (resp.data.statusCode === 200) {
+                    hideLoading();
                     setlistaPublicaciones(resp.data.data);
                 } else {
+                    hideLoading();
                     console.log('Hubo un error');
                 }
             });
@@ -151,8 +203,150 @@ export const AdvancedFilter = () => {
         return tiempo;
     };
 
+    const renderInformationEmpleo = () => {
+        const dataempleo = objPublication;
+        const requisitos = Object.keys(dataempleo).length > 0 ? JSON.parse(dataempleo.requisitos) : {}
+        const habilidades = Object.keys(dataempleo).length > 0 ? JSON.parse(dataempleo.habilidades) : {}
+        const condicion_laboral = Object.keys(dataempleo).length > 0 ? JSON.parse(dataempleo.condicion_laboral) : {}
+
+        return (
+            <>
+                <div><p style={{ fontWeight: 'bold', color: 'green', fontSize: 14 }}>Descripcion: <span style={{ color: '#000000', fontSize: 14 }}>{dataempleo.descripcion}</span></p></div>
+                <div>
+                    <p style={{ fontWeight: 'bold', color: 'green', fontSize: 14, marginTop: -10 }}>Especialidad: <span style={{ color: '#000000', fontSize: 14 }}>{dataempleo.especialidad}</span></p>
+                    <p style={{ fontWeight: 'bold', color: 'green', fontSize: 14, marginTop: -10 }}>Subespecialidad : <span style={{ color: '#000000', fontSize: 14 }}>{dataempleo.subespecialidad}</span></p>
+                </div>
+                <div>
+                    <p>REQUISITOS:</p>
+                    <div className="row col-12">
+
+                        {Object.keys(requisitos).length > 0 && Object.keys(requisitos['TITULACIONES']).length > 0 &&
+                            <div className="col-6">
+                                <p style={{ textAlign: 'left', fontWeight: 'bold', color: '#004400', fontSize: 12 }}>TITULACIONES</p>
+                                {Object.keys(requisitos['TITULACIONES']).map((item, idx) => {
+                                    return (
+                                        <p style={{ fontSize: 11, marginTop: -10 }}>&bull; {requisitos['TITULACIONES'][item]}</p>
+                                    )
+                                })
+
+                                }
+                            </div>
+                        }
+
+
+                        {Object.keys(requisitos).length > 0 && Object.keys(requisitos['COMPETENCIAS']).length > 0 &&
+                            <div className="col-6">
+                                <p style={{ textAlign: 'left', fontWeight: 'bold', color: '#004400', fontSize: 12 }}>COMPETENCIAS</p>
+                                {Object.keys(requisitos['COMPETENCIAS']).map((item, idx) => {
+                                    return (
+                                        <p style={{ fontSize: 11, marginTop: -10 }}>&bull; {requisitos['COMPETENCIAS'][item]}</p>
+                                    )
+                                })
+
+                                }
+                            </div>
+
+                        }
+
+                        {Object.keys(requisitos).length > 0 && Object.keys(requisitos['EXPERIENCIA']).length > 0 &&
+                            <div className="col-6">
+                                <p style={{ textAlign: 'left', fontWeight: 'bold', color: '#004400', fontSize: 12 }}>EXPERIENCIA</p>
+                                {Object.keys(requisitos['EXPERIENCIA']).map((item, idx) => {
+                                    return (
+                                        <p style={{ fontSize: 11, marginTop: -10 }}>&bull; {requisitos['EXPERIENCIA'][item]}</p>
+                                    )
+                                })
+
+                                }
+                            </div>
+                        }
+
+
+                        {Object.keys(requisitos).length > 0 && Object.keys(requisitos['IDIOMAS']).length > 0 &&
+                            <div className="col-6">
+                                <p style={{ textAlign: 'left', fontWeight: 'bold', color: '#004400', fontSize: 12 }}>IDIOMAS</p>
+                                {Object.keys(requisitos['IDIOMAS']).map((item, idx) => {
+                                    return (
+                                        <p style={{ fontSize: 11, marginTop: -10 }}>&bull; {requisitos['IDIOMAS'][item]}</p>
+                                    )
+                                })
+
+                                }
+                            </div>
+                        }
+
+                    </div>
+
+
+
+                    {Object.keys(habilidades).length > 0 &&
+                        <>
+                            <p>HABILIDADES:</p>
+                            <div className="row col-12">
+                                {Object.keys(habilidades).map((item, idx) => {
+                                    return (
+                                        <div className="col-6" style={{ marginTop: -10 }}>
+                                            <p style={{ fontSize: 11 }}>&bull; {habilidades[item]}</p>
+                                        </div>
+                                    )
+                                })
+
+                                }
+                            </div>
+                        </>
+                    }
+
+                    {Object.keys(condicion_laboral).length > 0 &&
+                        <>
+                            <p>INFORMACION LABORAL:</p>
+                            <div className="row col-12">
+
+                                {Object.keys(condicion_laboral).length > 0 && Object.keys(condicion_laboral['JORNADA']).length > 0 &&
+                                    <div className="col-12">
+                                        <p style={{ textAlign: 'left', fontWeight: 'bold', color: '#004400', fontSize: 12 }}>JORNADA: <span style={{ color: 'grey', fontWeight: 'normal' }}>{condicion_laboral.JORNADA}</span></p>
+                                    </div>
+                                }
+                                {Object.keys(condicion_laboral).length > 0 && Object.keys(condicion_laboral['HORARIO']).length > 0 &&
+                                    <div className="col-12">
+                                        <p style={{ textAlign: 'left', fontWeight: 'bold', color: '#004400', fontSize: 12 }}>HORARIO: <span style={{ color: 'grey', fontWeight: 'normal' }}>{condicion_laboral.HORARIO}</span></p>
+                                    </div>
+                                }
+                                {Object.keys(condicion_laboral).length > 0 && Object.keys(condicion_laboral['TIPO_CONTRATO']).length > 0 &&
+                                    <div className="col-12">
+                                        <p style={{ textAlign: 'left', fontWeight: 'bold', color: '#004400', fontSize: 12 }}>TIPO_CONTRATO: <span style={{ color: 'grey', fontWeight: 'normal' }}>{condicion_laboral.TIPO_CONTRATO}</span></p>
+                                    </div>
+                                }
+                                {Object.keys(condicion_laboral).length > 0 && Object.keys(condicion_laboral['REMUNERACION']).length > 0 &&
+                                    <div className="col-12">
+                                        <p style={{ textAlign: 'left', fontWeight: 'bold', color: '#004400', fontSize: 12 }}>REMUNERACION: <span style={{ color: 'grey', fontWeight: 'normal' }}>{condicion_laboral.REMUNERACION}</span></p>
+                                    </div>
+                                }
+                            </div>
+
+                        </>
+                    }
+
+                </div>
+            </>
+        )
+    }
+
     return (
         <>
+            <Dialog open={modalViewEmpleo} onClose={closeModalViewEmpleo} aria-labelledby="form-dialog-title" style={{ zIndex: 20 }}>
+                <DialogTitle id="form-dialog-title" style={{ textAlign: 'center', color: 'green', fontWeight: 'bold' }}>{objPublication.nombre ? objPublication.razon_social.toUpperCase() + ' - ' + objPublication.nombre.toUpperCase() : ''}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {renderInformationEmpleo()}
+                    </DialogContentText>
+
+                </DialogContent>
+                <DialogActions>
+                    <MaterialButton onClick={closeModalViewEmpleo} color="error">
+                        Cerrar
+                    </MaterialButton>
+                </DialogActions>
+            </Dialog>
             <Container>
                 <TopNavbar></TopNavbar>
                 <Title>
@@ -222,7 +416,7 @@ export const AdvancedFilter = () => {
                 <List>
                     {Object.values(listaPublicaciones).map((publicacion) => {
                         return (
-                            <Employed key={publicacion.id + publicacion.titulo} onClick={() => window.location.href = '/publication/' + publicacion.publicacionid}>
+                            <Employed key={publicacion.id + publicacion.titulo} onClick={() => openModalViewEmpleo(publicacion.publicacionid)}>
                                 <Img src={maletin}></Img>
                                 <Info>
                                     <InfoEmployed>
@@ -238,7 +432,7 @@ export const AdvancedFilter = () => {
                                             <State>{publicacion.ciudadempresa}</State>
                                         }
                                         <State className="latest"><FaRegClock className="clock" /> {calcFecha(publicacion.fecha)}</State>
-                                        <ViewEmployed > <FaArrowRight className="icon" /></ViewEmployed>
+                                        {/*<ViewEmployed > <FaArrowRight className="icon" /></ViewEmployed>*/}
                                     </InfoStatus>
                                 </Info>
                             </Employed>
