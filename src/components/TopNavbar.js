@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from "styled-components";
 import Logo from "../assets/img/logo.png";
-
+import { FaUser } from "react-icons/fa";
+import { Link } from 'react-router-dom';
 
 export const TopNavbar = () => {
 
@@ -16,14 +17,19 @@ export const TopNavbar = () => {
         button = <LoginButton href='/login'>Iniciar Sesión</LoginButton >;
     } else {
         //User options
-        button = <LoginButton href='/login' onClick={clearStorage} > Cerrar Sesión</LoginButton >;
+        button = 
+        <div style={{display:'flex',flexDirection:'row',alignItems:'center'}}>
+            <LoginButton href='/login' onClick={clearStorage} > Cerrar Sesión </LoginButton >
+            <Link to="/perfil"><div style={{color:'white',backgroundColor:'green',width:40,height:40,borderRadius:50,marginLeft:10,textAlign:'center',cursor:'pointer'}}><FaUser size={20} color='white' style={{marginTop:10}}/></div></Link>
+        </div>
+       
+       
     };
 
     return (
         <Container>
             <a href="/"><LogoContainer src={Logo} /></a>
             {button}
-
         </Container >
     );
 
@@ -45,6 +51,7 @@ border-bottom: 1px solid gray;
 `;
 
 const LogoContainer = styled.img`
+margin-left:200px;
 `;
 
 const UserOptions = styled.div`

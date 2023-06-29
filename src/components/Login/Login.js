@@ -112,10 +112,22 @@ export const Login = () => {
             instance.post('/usuario/login', objUser)
                 .then(resp => {
                     const data = resp.data.data;
+                    console.log(resp.data);
                     if (resp.data.statusCode === 200 && Object.keys(data).length > 0) {
                         if (data.estado_cuenta) {
-                            localStorage.setItem('token', JSON.stringify(data.token));
+                            if(data.token){
+                             localStorage.setItem('token', JSON.stringify(data.token));
                             window.location.href = "/";
+                            }else{
+                                sweetAlert({
+                                    icon: 'warning',
+                                    title: 'Informacion',
+                                    message: 'Estimado Usuario, usted esta en un proceso de cambio de contraseña, si no ha sido usted por favor recupere su contraseña nuevamente '
+                                });
+                                setButton(false);
+                                hideLoading();
+                            }
+                           
                             hideLoading();
                         } else {
                             sweetAlert({

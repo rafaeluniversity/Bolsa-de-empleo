@@ -3,15 +3,15 @@ import axios from 'axios';
 const instance = axios.create({
   headers: { 'Content-Type': 'application/json; charset=utf-8' },
   withCredentials: false,
-  baseURL: 'http://192.168.0.108/api-utm-bolsaempleo/public/',
+  baseURL: 'api-utm-bolsaempleo/public',
   //baseURL: 'http://127.0.0.1:8080/'
 });
 
 instance.interceptors.request.use(
   config => {
-    const configuration = localStorage.getItem('Authorization');
+    const configuration = localStorage.getItem('token');
     const auth = JSON.parse(configuration);
-
+    config.headers['Access-Control-Allow-Origin'] = '*';
     if (auth) {
       config.headers['Authorization'] = auth;
     }

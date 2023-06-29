@@ -18,8 +18,14 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
+import Sidebar from "./Sidebar";
+import routesEmpresa from "../components/routes/RoutesBarEmpresa";
+import PerfectScrollbar from "perfect-scrollbar";
 
-export const ListEmpleo = () => {
+var ps;
+
+export const ListEmpleo = (props) => {
+    const [sidebarMini, setSidebarMini] = React.useState(true);
     const [listaPublicaciones, setlistaPublicaciones] = useState({});
     const [filtro, setFiltro] = useState({
         especialidad_id: 0,
@@ -29,10 +35,25 @@ export const ListEmpleo = () => {
     });
     const [modalViewEmpleo, setModalViewEmpleo] = useState(false);
     const [objPublication, setObjPublication] = useState({});
-
+    const mainPanel = React.useRef();
 
     const tipoUser = typeof localStorage.getItem('token') === 'string' ? decodeJWT(localStorage.getItem('token')).tipousuario : "";
     const publicationIn = localStorage.getItem('token') && (tipoUser === 'EMP' || tipoUser === 'EMD' || tipoUser === 'ADM') ? <LinkPublication href="/publication">Publicar Empleo</LinkPublication> : "";
+
+    useEffect(() => {
+        if (navigator.platform.indexOf("Win") > -1) {
+            document.documentElement.className += " perfect-scrollbar-on";
+            document.documentElement.classList.remove("perfect-scrollbar-off");
+            ps = new PerfectScrollbar(mainPanel.current);
+        }
+        return function cleanup() {
+            if (navigator.platform.indexOf("Win") > -1) {
+                ps.destroy();
+                document.documentElement.className += " perfect-scrollbar-off";
+                document.documentElement.classList.remove("perfect-scrollbar-on");
+            }
+        };
+    });
 
     useEffect(() => {
         instance.get('/publicaciones/list/last')
@@ -92,7 +113,7 @@ export const ListEmpleo = () => {
             });
 
     }
-    
+
     const send = () => {
         let aux;
         if (filtro.palabraclave === "") {
@@ -301,8 +322,21 @@ export const ListEmpleo = () => {
         )
     }
 
+    const minimizeSidebar = () => {
+        var message = "Sidebar mini ";
+        if (document.body.classList.contains("sidebar-mini")) {
+            setSidebarMini(false);
+            message += "deactivated...";
+        } else {
+            setSidebarMini(true);
+            message += "activated...";
+        }
+        document.body.classList.toggle("sidebar-mini");
+    };
+
     return (
-        <div>
+        <div className="wrapper">
+            <Sidebar {...props} routes={routesEmpresa} backgroundColor={'green'} minimizeSidebar={minimizeSidebar} />
             <Dialog open={modalViewEmpleo} onClose={closeModalViewEmpleo} aria-labelledby="form-dialog-title" style={{ zIndex: 20 }}>
                 <DialogTitle id="form-dialog-title" style={{ textAlign: 'center', color: 'green', fontWeight: 'bold' }}>{objPublication.nombre ? objPublication.razon_social.toUpperCase() + ' - ' + objPublication.nombre.toUpperCase() : ''}</DialogTitle>
                 <DialogContent>
@@ -319,90 +353,91 @@ export const ListEmpleo = () => {
             </Dialog>
 
             <TopNavbar></TopNavbar>
+            <div className="main-panel" ref={mainPanel}>
+                <Banner>
+                    <Titletwo>
+                        Ofertas de empleo exculsivas
+                        para nuestros graduados y emprendedores
+                    </Titletwo>
 
-            <Banner>
-                <Titletwo>
-                    Ofertas de empleo exculsivas
-                    para nuestros graduados y emprendedores
-                </Titletwo>
+                    <Filter>
 
-                <Filter>
+                        <Input
+                            className="first"
+                            name="palabraclave"
+                            type="text"
+                            value={filtro.palabraclave}
+                            onChange={createChangeHandler}
+                            placeholder="Puesto o empleo"
+                        />
 
-                    <Input
-                        className="first"
-                        name="palabraclave"
-                        type="text"
-                        value={filtro.palabraclave}
-                        onChange={createChangeHandler}
-                        placeholder="Puesto o empleo"
-                    />
+                        <FaSearch className='search' />
 
-                    <FaSearch className='search' />
+                        <FaMapMarkerAlt className='map' />
 
-                    <FaMapMarkerAlt className='map' />
+                        <Input
+                            name="ubicacionId"
+                            onChange={createChangeHandler}
+                            value={filtro.ubicacionId}
+                            type="text"
+                            placeholder="Ubicación"
+                        />
 
-                    <Input
-                        name="ubicacionId"
-                        onChange={createChangeHandler}
-                        value={filtro.ubicacionId}
-                        type="text"
-                        placeholder="Ubicación"
-                    />
+                        <Submit type="button" value="Buscar" onClick={send} />
+                    </Filter>
+                    <div> <LinkPublication href="/filter">Búsqueda Avanzada</LinkPublication> {publicationIn}</div>
+                </Banner>
 
-                    <Submit type="button" value="Buscar" onClick={send} />
-                </Filter>
-                <div> <LinkPublication href="/filter">Búsqueda Avanzada</LinkPublication> {publicationIn}</div>
-            </Banner>
+                <Main>
+                    <Title>
+                        Empleos Recientes
+                    </Title>
+                    <Container>
+                        <List>
+                            {Object.values(listaPublicaciones).map((publicacion) => {
+                                return (
+                                    <Employed key={publicacion.publicacionid + publicacion.titulo} onClick={() => openModalViewEmpleo(publicacion.publicacionid)}>
+                                        <Img src={maletin}></Img>
+                                        <Info>
+                                            <InfoEmployed>
+                                                <TitleEmployed>{publicacion.titulo.toUpperCase()}</TitleEmployed>
+                                                <Label>Vacantes: {publicacion.vacantes && parseInt(publicacion.vacantes) > 0 ? publicacion.vacantes : "No especificado"}</Label>
+                                            </InfoEmployed>
+                                            <InfoStatus>
+                                                <State>{publicacion.nombreempresa}</State>
+                                                {(publicacion.correo_empresa !== null || publicacion.telefono_empresa !== null) &&
+                                                    <State>Contactos: {publicacion.correo_empresa} - {publicacion.telefono_empresa}</State>
+                                                }
+                                                {(publicacion.correo_empresa === null && publicacion.telefono_empresa === null) &&
+                                                    <State>{publicacion.ciudadempresa}</State>
+                                                }
+                                                <State className="latest"><FaRegClock className="clock" /> {calcFecha(publicacion.fecha)}</State>
+                                                {/*<ViewEmployed > <FaEye className="icon" /></ViewEmployed>*/}
+                                            </InfoStatus>
+                                        </Info>
+                                    </Employed>
 
-            <Main>
-                <Title>
-                    Empleos Recientes
-                </Title>
-                <Container>
-                    <List>
-                        {Object.values(listaPublicaciones).map((publicacion) => {
-                            return (
-                                <Employed key={publicacion.publicacionid + publicacion.titulo} onClick={() => openModalViewEmpleo(publicacion.publicacionid)}>
-                                    <Img src={maletin}></Img>
-                                    <Info>
-                                        <InfoEmployed>
-                                            <TitleEmployed>{publicacion.titulo.toUpperCase()}</TitleEmployed>
-                                            <Label>Vacantes: {publicacion.vacantes && parseInt(publicacion.vacantes) > 0 ? publicacion.vacantes : "No especificado"}</Label>
-                                        </InfoEmployed>
-                                        <InfoStatus>
-                                            <State>{publicacion.nombreempresa}</State>
-                                            {(publicacion.correo_empresa !== null || publicacion.telefono_empresa !== null) &&
-                                                <State>Contactos: {publicacion.correo_empresa} - {publicacion.telefono_empresa}</State>
-                                            }
-                                            {(publicacion.correo_empresa === null && publicacion.telefono_empresa === null) &&
-                                                <State>{publicacion.ciudadempresa}</State>
-                                            }
-                                            <State className="latest"><FaRegClock className="clock" /> {calcFecha(publicacion.fecha)}</State>
-                                            {/*<ViewEmployed > <FaEye className="icon" /></ViewEmployed>*/}
-                                        </InfoStatus>
-                                    </Info>
-                                </Employed>
+                                );
+                            })}
 
-                            );
-                        })}
+                            <More>
+                                <MoreButton>Más Empleos</MoreButton>
+                            </More>
+                        </List>
+                        <Published>
+                            <Subtitle>Sobre Nosotros</Subtitle>
+                            <P>Bienvenido/a a nuestra plataforma de empleos para estudiantes universitarios. </P>
+                            <P> En nuestro sitio web, buscamos facilitar la búsqueda de trabajo para aquellos que están estudiando en la Universidad Tecnica de Manabi. </P>
+                            <P> Ofrecemos una amplia gama de publicaciones de empleos disponibles para que los estudiantes puedan explorar y aplicar en consecuencia.  </P>
+                            <P>  Nuestro objetivo es brindar a los estudiantes las herramientas necesarias para tener éxito en la búsqueda de trabajo y lograr su objetivo de carrera.  </P>
+                            <P>"¡Explora nuestras publicaciones de empleos y comienza a construir tu futuro profesional hoy mismo!</P>
 
-                        <More>
-                            <MoreButton>Más Empleos</MoreButton>
-                        </More>
-                    </List>
-                    <Published>
-                        <Subtitle>Sobre Nosotros</Subtitle>
-                        <P>Bienvenido/a a nuestra plataforma de empleos para estudiantes universitarios. </P>
-                        <P> En nuestro sitio web, buscamos facilitar la búsqueda de trabajo para aquellos que están estudiando en la Universidad Tecnica de Manabi. </P>
-                        <P> Ofrecemos una amplia gama de publicaciones de empleos disponibles para que los estudiantes puedan explorar y aplicar en consecuencia.  </P>
-                        <P>  Nuestro objetivo es brindar a los estudiantes las herramientas necesarias para tener éxito en la búsqueda de trabajo y lograr su objetivo de carrera.  </P>
-                        <P>"¡Explora nuestras publicaciones de empleos y comienza a construir tu futuro profesional hoy mismo!</P>
-
-                        <ImgPublished src={img} />
-                        {/*<ImgPublished src={img} />*/}
-                    </Published>
-                </Container>
-            </Main>
+                            <ImgPublished src={img} />
+                            {/*<ImgPublished src={img} />*/}
+                        </Published>
+                    </Container>
+                </Main>
+            </div>
         </div >
     );
 }
@@ -420,7 +455,7 @@ height: auto;
 min-height: 100vh;
 `;
 
-const Title = styled.h1`
+const Title = styled.h2`
 text-align: center;
 width: 20%;
 height: 2em;

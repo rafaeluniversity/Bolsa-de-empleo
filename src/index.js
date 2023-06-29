@@ -8,6 +8,7 @@ import { Provider } from 'react-redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import { createStore } from 'redux';
 import storage from 'redux-persist/lib/storage';
+import "./assets/scss/now-ui-dashboard.scss?v1.5.0";
 
 const persistConfig = {
   key: 'root',

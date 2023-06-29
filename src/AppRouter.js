@@ -10,6 +10,8 @@ import EmailConfirmation from './components/Registro/EmailConfirmation';
 import Publication from './components/Publication/Publication';
 import ListEmpleo from './components/ListEmpleo';
 import AdvancedFiltro from './components/Filtro/AdvancedFiltro';
+import PerfilScreen from './screens/PerfilScreen';
+import EmpleosPublicados from './screens/EmpleosPublicados';
 
 export const AppRouter = () => {
     return (
@@ -17,9 +19,9 @@ export const AppRouter = () => {
             <Routes>
                 <Route path="/" element={<ListEmpleo />} />
             </Routes>
-            <Routes>
+            {/*<Routes>
                 <Route path="/login" element={<Login />} />
-            </Routes>
+    </Routes>*/}
             <Routes>
                 <Route path="/register" element={<RegistroApp />} />
             </Routes>
@@ -34,6 +36,12 @@ export const AppRouter = () => {
             </Routes>
             <Routes>
                 <Route path="/filter" element={<AdvancedFiltro />} />
+            </Routes>
+            <Routes>
+                <Route path="/perfil" element={<PerfilScreen />} />
+            </Routes>
+            <Routes>
+                <Route path="/empresa/listaEmpleos" element={<EmpleosPublicados />} />
             </Routes>
         </Router >
     );
